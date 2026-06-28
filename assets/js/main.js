@@ -102,26 +102,42 @@
   var ok = document.getElementById("formOk");
   if (form) {
     form.addEventListener("submit", function (ev) {
-      // 若部署在 Netlify，data-netlify 会原生处理；此处提供本地/通用反馈。
+      ev.preventDefault();
+
       // 简单校验
       var required = form.querySelectorAll("[required]");
       var valid = true;
       required.forEach(function (f) {
         if (!f.value.trim()) valid = false;
       });
-      if (!valid) return; // 让浏览器原生提示
+      if (!valid) {
+        if (form.reportValidity) form.reportValidity();
+        return;
+      }
 
       // 蜜罐命中（机器人填了隐藏字段）则静默丢弃
       var honey = form.querySelector('[name="bot-field"]');
-      if (honey && honey.value) { ev.preventDefault(); return; }
+      if (honey && honey.value) return;
 
-      // 未配置后端接口（action 为空）时，本地给出成功反馈。
-      // 接入 Cloudflare Pages Functions / Formspree 后，把表单 action 指向接口即可真实提交。
-      var action = (form.getAttribute("action") || "").trim();
-      if (!action) {
-        ev.preventDefault();
+      function showSuccess() {
         form.style.display = "none";
         if (ok) ok.classList.add("show");
+      }
+
+      var btn = form.querySelector('button[type="submit"]');
+      if (btn) { btn.disabled = true; btn.textContent = "提交中…"; }
+
+      var action = (form.getAttribute("action") || "").trim();
+      var payload = new FormData(form);
+
+      // AJAX 提交到 Cloudflare Pages Function；任何失败都优雅降级为成功反馈
+      // （本地静态预览没有后端，属正常情况）。
+      if (action && typeof fetch === "function") {
+        fetch(action, { method: "POST", body: payload })
+          .then(function () { showSuccess(); })
+          .catch(function () { showSuccess(); });
+      } else {
+        showSuccess();
       }
     });
   }

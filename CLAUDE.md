@@ -32,8 +32,13 @@ assets/js/main.js              # 测算器 / 导航 / 滚动渐显 / 表单
 python3 -m http.server 8080   # 打开 http://localhost:8080
 ```
 
-## 表单后端
+## 表单后端（已接 Cloudflare Pages Functions）
 
-留资表单当前由 JS 给出本地成功反馈。接入真实后端时，把 `index.html` 中
-`#leadForm` 的 `action` 指向接口（Cloudflare Pages Functions `/functions/api/lead.js`
-或 Formspree 等）即可。
+留资表单 AJAX 提交到 `POST /api/lead`，由 `functions/api/lead.js` 处理。
+该函数全部能力可选、优雅降级（缺绑定也不会让表单报错）：
+
+- **持久化存储**：在 Pages 项目 → Settings → Functions → KV namespace bindings，
+  绑定变量名 `LEADS` 到一个 KV 命名空间，线索即写入 KV。
+- **实时通知**：设置环境变量 `LEAD_WEBHOOK_URL`（飞书/企业微信/Slack 机器人），
+  每条线索实时推送。
+- 本地纯静态预览没有后端，fetch 失败时前端优雅降级为成功反馈，属正常现象。

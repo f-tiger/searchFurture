@@ -30,8 +30,16 @@
 index.html                     # 单页落地页
 assets/css/styles.css          # 自包含设计系统
 assets/js/main.js              # 退税测算器 / 导航 / 渐显 / 表单
+functions/api/lead.js          # Cloudflare Pages Function：留资接口 POST /api/lead
 .github/workflows/deploy.yml   # Cloudflare Pages 自动部署
 ```
+
+### 留资后端
+
+表单 AJAX 提交到 `POST /api/lead`（`functions/api/lead.js`）。可选配置：
+- 绑定 KV 命名空间 `LEADS` → 线索持久化存储；
+- 设置环境变量 `LEAD_WEBHOOK_URL`（飞书/企业微信/Slack 机器人）→ 实时通知。
+缺任一绑定都会优雅降级，不影响表单提交。
 
 ### 本地预览
 
