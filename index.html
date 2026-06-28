@@ -358,9 +358,10 @@
     <div class="form-card">
       <h3>预约免费退税诊断</h3>
       <p class="sub">填写后 1 个工作日内联系你</p>
-      <form name="lead" method="POST" data-netlify="true" netlify-honeypot="bot-field" id="leadForm">
-        <input type="hidden" name="form-name" value="lead" />
-        <p style="display:none"><label>不要填写：<input name="bot-field" /></label></p>
+      <!-- 后端可接 Cloudflare Pages Functions（/functions/api/lead.js）或 Formspree 等；
+           当前默认由 JS 给出本地成功反馈。将 action 改为你的接口地址即可启用真实提交。 -->
+      <form name="lead" method="POST" action="" id="leadForm">
+        <p style="display:none" aria-hidden="true"><label>不要填写：<input name="bot-field" tabindex="-1" autocomplete="off" /></label></p>
         <div class="form-row">
           <label>公司名称</label>
           <input type="text" name="company" placeholder="例如：XX 进出口有限公司" required />

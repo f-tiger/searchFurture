@@ -27,10 +27,10 @@
 纯静态站点，**无构建步骤、无运行时外部依赖**，可部署到任意静态托管。
 
 ```
-index.html            # 单页落地页
-assets/css/styles.css # 自包含设计系统
-assets/js/main.js     # 退税测算器 / 导航 / 渐显 / 表单
-netlify.toml          # Netlify 部署配置
+index.html                     # 单页落地页
+assets/css/styles.css          # 自包含设计系统
+assets/js/main.js              # 退税测算器 / 导航 / 渐显 / 表单
+.github/workflows/deploy.yml   # Cloudflare Pages 自动部署
 ```
 
 ### 本地预览
@@ -40,10 +40,15 @@ python3 -m http.server 8080
 # 浏览器打开 http://localhost:8080
 ```
 
-### 部署
+### 部署（Cloudflare Pages + GitHub）
 
-- **Netlify**：连接仓库即可，发布目录为根目录（已配置 `netlify.toml`），留资表单自动接入 Netlify Forms。
-- **GitHub Pages / Vercel / 任意静态托管**：直接发布根目录。
+本项目默认部署到 **Cloudflare Pages**（免费额度大）。两种方式任选其一：
+
+1. **GitHub Actions 自动部署（已配置）**：在仓库 `Settings → Secrets and variables → Actions`
+   添加 `CLOUDFLARE_API_TOKEN` 与 `CLOUDFLARE_ACCOUNT_ID`，之后每次 push 自动部署
+   （见 `.github/workflows/deploy.yml`，首次运行自动创建名为 `tongtax` 的 Pages 项目）。
+2. **控制台连仓库（零配置）**：Cloudflare → `Pages → Connect to Git` → 选本仓库，
+   构建命令留空、输出目录为根 `/`，保存即上线。
 
 ## 免责声明
 

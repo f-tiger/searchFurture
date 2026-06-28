@@ -1,0 +1,33 @@
+name: Deploy to Cloudflare Pages
+
+# 每次推送到主干或本功能分支时，自动把静态站点部署到 Cloudflare Pages。
+# 需要在仓库 Settings → Secrets and variables → Actions 添加两个 secret：
+#   CLOUDFLARE_API_TOKEN   （Cloudflare 控制台 → My Profile → API Tokens，
+#                            模板选 "Edit Cloudflare Workers" 或自定义含 Pages:Edit 权限）
+#   CLOUDFLARE_ACCOUNT_ID  （Cloudflare 控制台右侧 Account ID）
+
+on:
+  push:
+    branches:
+      - main
+      - claude/wealth-freedom-strategy-bed1wn
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          # 纯静态站点：根目录即发布目录，无需构建步骤。
+          # 首次运行会自动创建名为 tongtax 的 Pages 项目。
+          command: pages deploy . --project-name=tongtax --branch=${{ github.ref_name }} --commit-dirty=true

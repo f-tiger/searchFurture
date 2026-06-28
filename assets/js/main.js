@@ -111,19 +111,18 @@
       });
       if (!valid) return; // 让浏览器原生提示
 
-      // 在没有后端的演示环境下，阻止跳转并给出成功反馈
-      var hasNetlify = form.getAttribute("data-netlify") === "true";
-      var isLocal =
-        location.protocol === "file:" ||
-        location.hostname === "localhost" ||
-        location.hostname === "127.0.0.1";
+      // 蜜罐命中（机器人填了隐藏字段）则静默丢弃
+      var honey = form.querySelector('[name="bot-field"]');
+      if (honey && honey.value) { ev.preventDefault(); return; }
 
-      if (isLocal || !hasNetlify) {
+      // 未配置后端接口（action 为空）时，本地给出成功反馈。
+      // 接入 Cloudflare Pages Functions / Formspree 后，把表单 action 指向接口即可真实提交。
+      var action = (form.getAttribute("action") || "").trim();
+      if (!action) {
         ev.preventDefault();
         form.style.display = "none";
         if (ok) ok.classList.add("show");
       }
-      // 若在 Netlify 线上，则正常提交由平台捕获表单。
     });
   }
 })();
