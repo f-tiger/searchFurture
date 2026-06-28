@@ -1,7 +1,9 @@
 # Cloudflare Workers + Static Assets configuration for Brandloop.
 # Deploy with: npx wrangler deploy  (Cloudflare's Git integration runs this automatically)
 
-name = "brandloop"
+# Worker 名与 Cloudflare 项目一致（线上为 searchfurture.<subdomain>.workers.dev）。
+# 想用 brandloop 作为正式地址时，在 dashboard 重命名项目或绑定自定义域名即可。
+name = "searchfurture"
 main = "worker.js"
 compatibility_date = "2026-06-28"
 
