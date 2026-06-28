@@ -8,6 +8,7 @@
  * so this fetch handler effectively runs for non-asset routes like /api/lead.
  */
 import { handleLead } from "./lib/lead.js";
+import { handleLeadsAdmin } from "./lib/admin.js";
 
 export default {
   async fetch(request, env) {
@@ -15,6 +16,9 @@ export default {
 
     if (url.pathname === "/api/lead") {
       return handleLead(request, env);
+    }
+    if (url.pathname === "/api/leads") {
+      return handleLeadsAdmin(request, env);
     }
 
     // Fallback to static assets (returns the asset, or a 404 from the asset layer).
