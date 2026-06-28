@@ -1,88 +1,84 @@
 /* ==========================================================================
-   通税云 TongTax — 交互逻辑
-   - 退税测算器
-   - 移动端导航
-   - 滚动渐显
-   - 表单提交反馈
+   Brandloop — interactions
+   - Sample-week content plan generator (illustrative, runs locally)
+   - Mobile nav
+   - Scroll reveal
+   - Waitlist form submit (AJAX → /api/lead, graceful fallback)
    ========================================================================== */
 (function () {
   "use strict";
 
-  /* ---------- 退税测算器 ---------- */
-  var amountEl = document.getElementById("amount");
-  var rateEl = document.getElementById("rate");
-  var refundEl = document.getElementById("refund");
-  var ratioEl = document.getElementById("ratio");
-  var flagEl = document.getElementById("flag");
+  /* ---------- Sample-week plan generator ---------- */
+  var bizInput = document.getElementById("bizInput");
+  var genBtn = document.getElementById("genBtn");
+  var planOut = document.getElementById("planOut");
 
-  function fmt(n) {
-    return "¥" + Math.round(n).toLocaleString("zh-CN");
+  var TEMPLATES = [
+    { day: "Mon", platform: "X", kind: "green",
+      text: function (b) { return "Hot take: the one thing most people get wrong about " + b + " — and what to do instead. 🧵"; } },
+    { day: "Tue", platform: "LinkedIn", kind: "",
+      text: function (b) { return "A short story: how a customer used " + b + " to save a week of work. (Problem → turning point → result.)"; } },
+    { day: "Wed", platform: "Instagram", kind: "",
+      text: function (b) { return "Carousel: 5 signs you need " + b + " — slide-by-slide, swipe to the fix on the last card."; } },
+    { day: "Thu", platform: "Newsletter", kind: "green",
+      text: function (b) { return "This week's edition: a behind-the-scenes look at building " + b + ", plus one tactic you can steal today."; } },
+    { day: "Fri", platform: "X", kind: "",
+      text: function (b) { return "Ship-it Friday: a quick win your audience can apply to " + b + " before the weekend. Bookmark-worthy."; } },
+  ];
+
+  function escapeHtml(s) {
+    return s.replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
   }
 
-  function calcRefund() {
-    if (!amountEl || !rateEl || !refundEl) return;
-    var amount = parseFloat(amountEl.value) || 0;
-    var rate = parseFloat(rateEl.value) || 0;
+  function generatePlan() {
+    if (!planOut) return;
+    var raw = (bizInput && bizInput.value ? bizInput.value : "your business").trim();
+    if (!raw) raw = "your business";
+    var biz = escapeHtml(raw.slice(0, 80));
 
-    // 外贸企业出口退税常用估算口径：
-    // 应退税额 ≈ 出口货值 ÷ (1 + 退税率) × 退税率（不含税基数 × 退税率）
-    var refund = rate > 0 ? (amount / (1 + rate / 100)) * (rate / 100) : 0;
-
-    refundEl.innerHTML = fmt(refund) + ' <small>/ 单笔</small>';
-
-    if (ratioEl) {
-      ratioEl.textContent =
-        rate > 0
-          ? "退税率 " + rate + "% · 估算口径：货值 ÷ (1+" + rate + "%) × 退税率"
-          : "该品类不予退税（0%）——出口前请确认 HS 编码与退税资格";
-    }
-
-    if (flagEl) {
-      if (rate === 0) {
-        flagEl.innerHTML =
-          "提示：所选品类<b>不予退税</b>。错误归类可能导致补税与处罚，建议提前核验 HS 编码与退税率档位。";
-      } else if (refund >= 1000000) {
-        flagEl.innerHTML =
-          "你的单笔退税额较大（约 " +
-          fmt(refund) +
-          "）。<b>36 个月</b>红线与四流合一一旦出问题，损失成倍放大——更需要系统化风控。";
-      } else {
-        flagEl.innerHTML =
-          "注意：出口后须在 <b>36 个月</b>内完成退税申报，否则将被视同内销补缴增值税，并可能丧失退税资格。";
-      }
-    }
+    planOut.innerHTML = TEMPLATES.map(function (t) {
+      return (
+        '<div class="plan-item">' +
+        '<div class="pday">' + t.day + "</div>" +
+        '<div class="pbody">' +
+        '<div class="ptext">' + t.text(biz) + "</div>" +
+        '<div class="pmeta">' +
+        '<span class="pill ' + t.kind + '">' + t.platform + "</span>" +
+        '<span class="pill">on-brand</span>' +
+        '<span class="pill">auto-scheduled</span>' +
+        "</div></div></div>"
+      );
+    }).join("");
   }
 
-  if (amountEl) amountEl.addEventListener("input", calcRefund);
-  if (rateEl) rateEl.addEventListener("change", calcRefund);
-  calcRefund();
+  if (genBtn) genBtn.addEventListener("click", generatePlan);
+  if (bizInput) {
+    bizInput.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") { e.preventDefault(); generatePlan(); }
+    });
+  }
+  // Render an initial sample on load
+  generatePlan();
 
-  /* ---------- 移动端导航 ---------- */
+  /* ---------- Mobile nav ---------- */
   var nav = document.getElementById("nav");
   var toggle = document.getElementById("navToggle");
   if (toggle && nav) {
-    toggle.addEventListener("click", function () {
-      nav.classList.toggle("open");
-    });
-    // 点击链接后收起
-    var links = nav.querySelectorAll(".nav-links a");
-    links.forEach(function (a) {
-      a.addEventListener("click", function () {
-        nav.classList.remove("open");
-      });
+    toggle.addEventListener("click", function () { nav.classList.toggle("open"); });
+    nav.querySelectorAll(".nav-links a").forEach(function (a) {
+      a.addEventListener("click", function () { nav.classList.remove("open"); });
     });
   }
 
-  /* ---------- 滚动渐显 ---------- */
+  /* ---------- Scroll reveal ---------- */
   var revealEls = document.querySelectorAll(".reveal");
   if ("IntersectionObserver" in window && revealEls.length) {
     var io = new IntersectionObserver(
       function (entries) {
         entries.forEach(function (e) {
-          if (e.isIntersecting) {
-            e.target.classList.add("in");
-            io.unobserve(e.target);
-          }
+          if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
         });
       },
       { threshold: 0.12 }
@@ -92,30 +88,21 @@
       io.observe(el);
     });
   } else {
-    revealEls.forEach(function (el) {
-      el.classList.add("in");
-    });
+    revealEls.forEach(function (el) { el.classList.add("in"); });
   }
 
-  /* ---------- 表单提交反馈 ---------- */
+  /* ---------- Waitlist form ---------- */
   var form = document.getElementById("leadForm");
   var ok = document.getElementById("formOk");
   if (form) {
     form.addEventListener("submit", function (ev) {
       ev.preventDefault();
 
-      // 简单校验
       var required = form.querySelectorAll("[required]");
       var valid = true;
-      required.forEach(function (f) {
-        if (!f.value.trim()) valid = false;
-      });
-      if (!valid) {
-        if (form.reportValidity) form.reportValidity();
-        return;
-      }
+      required.forEach(function (f) { if (!f.value.trim()) valid = false; });
+      if (!valid) { if (form.reportValidity) form.reportValidity(); return; }
 
-      // 蜜罐命中（机器人填了隐藏字段）则静默丢弃
       var honey = form.querySelector('[name="bot-field"]');
       if (honey && honey.value) return;
 
@@ -125,13 +112,13 @@
       }
 
       var btn = form.querySelector('button[type="submit"]');
-      if (btn) { btn.disabled = true; btn.textContent = "提交中…"; }
+      if (btn) { btn.disabled = true; btn.textContent = "Joining…"; }
 
       var action = (form.getAttribute("action") || "").trim();
       var payload = new FormData(form);
 
-      // AJAX 提交到 Cloudflare Pages Function；任何失败都优雅降级为成功反馈
-      // （本地静态预览没有后端，属正常情况）。
+      // AJAX to the Cloudflare Pages Function; any failure degrades gracefully
+      // (local static preview has no backend — that's expected).
       if (action && typeof fetch === "function") {
         fetch(action, { method: "POST", body: payload })
           .then(function () { showSuccess(); })

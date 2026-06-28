@@ -39,42 +39,38 @@ export async function onRequestPost(context) {
   // 蜜罐：机器人填了隐藏字段则静默"成功"丢弃
   if (data["bot-field"]) return json({ ok: true });
 
-  const company = (data.company || "").toString().trim();
-  const name = (data.name || "").toString().trim();
-  const contact = (data.contact || "").toString().trim();
-  if (!company || !name || !contact) {
-    return json({ ok: false, error: "公司、称呼、联系方式为必填" }, 422);
+  const contact = (data.contact || "").toString().trim(); // email
+  if (!contact) {
+    return json({ ok: false, error: "email is required" }, 422);
   }
 
   const lead = {
-    company,
-    name,
-    contact,
-    business: (data.business || "").toString(),
-    scale: (data.scale || "").toString(),
+    email: contact,
+    about: (data.company || "").toString(),   // "what do you do?"
+    role: (data.business || "").toString(),    // founder / agency / ...
+    pain: (data.scale || "").toString(),       // biggest marketing headache
     ua: request.headers.get("user-agent") || "",
     ip: request.headers.get("cf-connecting-ip") || "",
     ts: new Date().toISOString(),
   };
 
-  // 1) KV 持久化（若已绑定）
+  // 1) Persist to KV (if bound)
   try {
     if (env.LEADS) {
-      await env.LEADS.put("lead:" + lead.ts + ":" + company, JSON.stringify(lead));
+      await env.LEADS.put("waitlist:" + lead.ts + ":" + contact, JSON.stringify(lead));
     }
   } catch (e) {
-    // 存储失败不影响用户体验
+    // storage failure must not break the user experience
   }
 
-  // 2) Webhook 实时通知（若已配置）
+  // 2) Realtime webhook notification (if configured)
   try {
     if (env.LEAD_WEBHOOK_URL) {
       const text =
-        "🆕 通税云新线索\n公司：" + company +
-        "\n称呼：" + name +
-        "\n联系：" + contact +
-        "\n业务：" + lead.business +
-        "\n规模：" + lead.scale;
+        "🆕 Brandloop waitlist signup\nEmail: " + contact +
+        "\nAbout: " + lead.about +
+        "\nRole: " + lead.role +
+        "\nPain: " + lead.pain;
       await fetch(env.LEAD_WEBHOOK_URL, {
         method: "POST",
         headers: { "content-type": "application/json" },
