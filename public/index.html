@@ -342,6 +342,7 @@
       <p class="sub">Be first in line for early access</p>
       <form name="lead" method="POST" action="/api/lead" id="leadForm">
         <p style="display:none" aria-hidden="true"><label>Don't fill this: <input name="bot-field" tabindex="-1" autocomplete="off" /></label></p>
+        <input type="hidden" name="source" id="leadSource" value="" />
         <div class="form-row">
           <label>Email</label>
           <input type="email" name="contact" placeholder="you@company.com" required />

@@ -8,6 +8,37 @@
 (function () {
   "use strict";
 
+  /* ---------- Attribution: capture traffic source on landing ---------- */
+  // Stores the first-touch source (utm_* / ref / referrer) so we can see which
+  // channel a signup actually came from — the key signal when starting from zero.
+  function captureSource() {
+    try {
+      var p = new URLSearchParams(location.search);
+      var src = p.get("utm_source") || p.get("ref") || "";
+      if (src && !localStorage.getItem("bl_src")) {
+        localStorage.setItem(
+          "bl_src",
+          JSON.stringify({
+            src: src,
+            medium: p.get("utm_medium") || "",
+            campaign: p.get("utm_campaign") || "",
+            ref: document.referrer || "",
+          })
+        );
+      }
+    } catch (e) {}
+  }
+  function resolveSource() {
+    try {
+      var s = JSON.parse(localStorage.getItem("bl_src") || "{}");
+      if (s.src) {
+        return [s.src, s.medium, s.campaign].filter(Boolean).join("/");
+      }
+    } catch (e) {}
+    return document.referrer || "direct";
+  }
+  captureSource();
+
   /* ---------- Sample-week plan generator ---------- */
   var bizInput = document.getElementById("bizInput");
   var genBtn = document.getElementById("genBtn");
@@ -105,6 +136,9 @@
 
       var honey = form.querySelector('[name="bot-field"]');
       if (honey && honey.value) return;
+
+      var srcField = form.querySelector("#leadSource");
+      if (srcField && !srcField.value) srcField.value = resolveSource();
 
       function showSuccess() {
         form.style.display = "none";
