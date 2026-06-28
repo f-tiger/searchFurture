@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://searchfurture.tuoqiantu.workers.dev/sitemap.xml

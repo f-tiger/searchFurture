@@ -217,6 +217,46 @@ h1, h2, h3 { line-height: 1.18; letter-spacing: -.01em; margin: 0; }
   .cal-day .d { padding: 12px; }
 }
 
+/* ---------- Hook list (tool) ---------- */
+.hook-list { margin-top: 30px; display: flex; flex-direction: column; gap: 12px; }
+.hook-card { display: flex; gap: 14px; align-items: flex-start; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; box-shadow: var(--shadow-sm); }
+.hook-card .num { flex: none; width: 26px; height: 26px; border-radius: 8px; background: var(--surface-3); color: var(--brand-ink); font-size: 12px; font-weight: 800; display: grid; place-items: center; margin-top: 2px; }
+.hook-card .body { flex: 1; min-width: 0; }
+.hook-card .htxt { font-size: 15.5px; color: var(--ink); line-height: 1.5; font-weight: 550; }
+.hook-card .hmeta { margin-top: 7px; display: flex; gap: 6px; align-items: center; }
+.hook-card .copy { margin-left: auto; font-size: 11px; font-weight: 600; color: var(--brand-ink); background: var(--surface-3); border: 0; border-radius: 7px; padding: 4px 10px; cursor: pointer; }
+.hook-card .copy:hover { background: #dde6fb; }
+
+/* ---------- Blog ---------- */
+.blog-hero { background: linear-gradient(180deg, #fbfcff 0%, #f3f6fe 100%); border-bottom: 1px solid var(--line); padding: 56px 0 44px; }
+.blog-hero h1 { font-size: clamp(28px, 4vw, 42px); font-weight: 850; letter-spacing: -.02em; }
+.blog-hero p { font-size: 17px; color: var(--ink-2); margin: 14px 0 0; max-width: 640px; }
+.post-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px; }
+.post-card { display: block; background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 26px; box-shadow: var(--shadow-sm); transition: transform .18s, box-shadow .2s, border-color .2s; }
+.post-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: #d4def5; }
+.post-card .tagrow { display: flex; gap: 8px; margin-bottom: 12px; }
+.post-card h3 { font-size: 19px; font-weight: 750; line-height: 1.3; margin-bottom: 10px; color: var(--ink); }
+.post-card p { margin: 0; font-size: 14.5px; color: var(--ink-2); }
+.post-card .more { display: inline-block; margin-top: 14px; font-size: 14px; font-weight: 600; color: var(--brand-ink); }
+
+/* Article */
+.article { max-width: 760px; margin: 0 auto; padding: 56px 0 40px; }
+.article .kicker { display: flex; gap: 10px; align-items: center; font-size: 13px; color: var(--ink-3); margin-bottom: 14px; }
+.article h1 { font-size: clamp(28px, 4.2vw, 42px); font-weight: 850; letter-spacing: -.02em; line-height: 1.18; }
+.article .lede { font-size: 19px; color: var(--ink-2); margin: 18px 0 8px; line-height: 1.6; }
+.article-body { font-size: 17px; line-height: 1.75; color: var(--ink); }
+.article-body h2 { font-size: 24px; font-weight: 800; margin: 36px 0 12px; letter-spacing: -.01em; }
+.article-body h3 { font-size: 19px; font-weight: 750; margin: 26px 0 8px; }
+.article-body p { margin: 0 0 18px; }
+.article-body ul, .article-body ol { margin: 0 0 18px; padding-left: 22px; }
+.article-body li { margin: 7px 0; }
+.article-body a { color: var(--brand-ink); text-decoration: underline; text-underline-offset: 2px; }
+.article-body strong { font-weight: 700; }
+.article-body blockquote { margin: 22px 0; padding: 14px 20px; border-left: 3px solid var(--brand-2); background: var(--surface-2); border-radius: 0 10px 10px 0; color: var(--ink-2); }
+.article-cta { margin: 40px 0 0; background: linear-gradient(135deg, #14224b 0%, #1d3a86 60%, #146e63 130%); color: #fff; border-radius: 18px; padding: 28px; }
+.article-cta h3 { font-size: 20px; font-weight: 800; margin: 0 0 8px; color: #fff; }
+.article-cta p { color: #c6d2f2; font-size: 15px; margin: 0 0 16px; }
+
 /* ---------- Pain band ---------- */
 .pain { background: var(--bg); color: #e8edfb; }
 .pain .section-head h2 { color: #fff; }
