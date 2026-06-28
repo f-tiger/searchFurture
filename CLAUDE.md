@@ -40,11 +40,16 @@
 ## 目录结构
 
 ```
-public/index.html              # 单页落地页（含样例周计划生成器）
+public/index.html              # 单页落地页（含样例周计划生成器 + 自助定价）
+public/pricing/                # 定价页（Pro 自助下单 + FAQ）
+public/success/                # 付款成功页（轮询取回 License Key）
 public/assets/css/styles.css   # 自包含设计系统，响应式
 public/assets/js/main.js       # 样例生成器 / 导航 / 滚动渐显 / waitlist 表单
-worker.js                      # Worker：服务静态资源 + POST /api/lead
+public/assets/js/checkout.js   # [data-checkout] → POST /api/checkout → 跳 Stripe（降级回 waitlist）
+worker.js                      # Worker：服务静态资源 + /api/lead /generate /checkout /stripe-webhook /license
 lib/lead.js                    # waitlist 共享逻辑（KV + Webhook，均可选）
+lib/generate.js                # AI 内容生成（Anthropic）；持 License 跳限额+升级模型
+lib/billing.js                 # Stripe Checkout/Webhook/License（自助计费内核）
 wrangler.toml                  # Workers + Static Assets 配置
 ```
 
@@ -66,8 +71,33 @@ python3 -m http.server 8080 --directory public   # 纯静态预览
 - `GEN_MODEL`（可选）— 默认 `claude-haiku-4-5`（公开工具按次计费，默认偏省成本）；
   想要更高质量可设 `claude-opus-4-8`。
 - `GEN_DAILY_LIMIT`（可选，默认 8）— 每 IP/天调用上限（防滥用/控成本，依赖 KV `LEADS`）。
+- `GEN_MODEL_PRO`（可选）— 持有有效 License 的付费用户使用的模型，默认 `claude-opus-4-8`。
 
 > 注：这是迈向真实产品的第一刀——免费工具从模板升级为真 AI，更强的获客磁石。
+
+## 自助计费与许可（Stripe · 可选 · 优雅降级）
+
+把"免费工具 + waitlist"升级为**可自助成交的商业闭环**：付费即得 License Key，
+凭 key 解锁所有工具（去掉免费日限、用最高质量模型）。代码全部 drop-in、缺配置即降级
+回 waitlist，**永不让漏斗断头**。
+
+- 路由（`worker.js` → `lib/billing.js`）：
+  - `POST /api/checkout` — 创建 Stripe Checkout Session（inline price_data，**店主无需在
+    Stripe 后台预建商品**），返回 `{ok,url}`；前端 `assets/js/checkout.js` 跳转到 Stripe。
+  - `POST /api/stripe-webhook` — 校验签名（Web Crypto HMAC-SHA256），`checkout.session.completed`
+    时铸造 License（`lic:<token>` 存 KV）+ `sess:<id>→token`（7 天）+ 可选 webhook 通知。
+  - `GET /api/license?session_id=...` — 成功页 `public/success/` 轮询取回 License Key。
+  - `verifyLicense()` 被 `/api/generate` 调用：持 key 者跳过免费限额、走 `GEN_MODEL_PRO`。
+- 前端：`public/pricing/`（定价页+FAQ）、`public/success/`（取回并展示 key，存 localStorage
+  `bl_license`）、内容日历工具内置 paywall（命中免费日限弹"Go Pro"）+ License 输入框。
+- 上线所需配置（Worker → Settings）：
+  - `STRIPE_SECRET_KEY`（Secret，必填才启用计费）、`STRIPE_WEBHOOK_SECRET`（Secret，校验 webhook）。
+  - 可选：`PRICE_USD_CENTS`（默认 1900=$19/mo）、`PLAN_NAME`（默认 "Brandloop Pro"）、
+    `PUBLIC_BASE_URL`、`LEAD_WEBHOOK_URL`（成交实时通知）。
+  - Stripe Dashboard → Webhooks 新增端点 `https://<域名>/api/stripe-webhook`，监听
+    `checkout.session.completed`，把签名密钥填入 `STRIPE_WEBHOOK_SECRET`。
+- **第一次成交所需的人工动作**（只此一次，无法由 AI 代办）：店主自建 Stripe 账号（KYC/收款），
+  填上述两个 Secret。配齐后整条链路即全自动：访客点击 → Stripe 付款 → 自动发 key → 工具解锁。
 
 ## 表单后端（已接 Cloudflare Pages Functions）
 

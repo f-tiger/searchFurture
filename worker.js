@@ -10,6 +10,7 @@
 import { handleLead } from "./lib/lead.js";
 import { handleLeadsAdmin } from "./lib/admin.js";
 import { handleGenerate } from "./lib/generate.js";
+import { handleCheckout, handleStripeWebhook, handleLicense } from "./lib/billing.js";
 
 export default {
   async fetch(request, env) {
@@ -23,6 +24,15 @@ export default {
     }
     if (url.pathname === "/api/generate") {
       return handleGenerate(request, env);
+    }
+    if (url.pathname === "/api/checkout") {
+      return handleCheckout(request, env);
+    }
+    if (url.pathname === "/api/stripe-webhook") {
+      return handleStripeWebhook(request, env);
+    }
+    if (url.pathname === "/api/license") {
+      return handleLicense(request, env);
     }
 
     // Fallback to static assets (returns the asset, or a 404 from the asset layer).

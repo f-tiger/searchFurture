@@ -9,6 +9,22 @@
 
   var DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
+  /* ---------- License (Pro) ---------- */
+  function getLicense() {
+    try { return (localStorage.getItem("bl_license") || "").trim(); } catch (e) { return ""; }
+  }
+  function setLicense(v) {
+    try { if (v) localStorage.setItem("bl_license", v); } catch (e) {}
+  }
+  function show(el, on) { if (el) el.style.display = on ? (el.tagName === "DIV" ? "block" : "block") : "none"; }
+  function reflectProState() {
+    var badge = document.getElementById("proBadge");
+    if (getLicense()) {
+      if (badge) badge.style.display = "block";
+      var pw = document.getElementById("paywall"); if (pw) pw.style.display = "none";
+    }
+  }
+
   var FORMAT = {
     "X": "Thread", "LinkedIn": "Story post", "Instagram": "Carousel",
     "Newsletter": "Deep-dive", "TikTok/Reels": "Short video", "Facebook": "Post",
@@ -146,10 +162,11 @@
     if (btn) { btn.disabled = true; }
     setStatus("✨ Writing on-brand ideas with AI…");
 
+    var license = getLicense();
     fetch("/api/generate", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ biz: v.biz, platforms: v.platforms, count: count, tone: v.tone }),
+      body: JSON.stringify({ biz: v.biz, platforms: v.platforms, count: count, tone: v.tone, license: license }),
     })
       .then(function (r) { return r.json(); })
       .then(function (data) {
@@ -161,13 +178,24 @@
           return { week: Math.floor(i / v.perWeek) + 1, day: day, platform: p.platform || v.platforms[i % v.platforms.length], angle: p.angle || "Idea", idea: p.text || "" };
         });
         render();
-        setStatus("✨ Generated with AI. Tweak any line to fit your voice.");
+        // Hide paywall/key-entry on success; reflect Pro if the server confirmed it.
+        var pw = document.getElementById("paywall"); if (pw) pw.style.display = "none";
+        var ke = document.getElementById("keyEntry"); if (ke) ke.style.display = "none";
+        if (data.pro) {
+          var badge = document.getElementById("proBadge"); if (badge) badge.style.display = "block";
+          setStatus("★ Pro: generated on the highest-quality model. Tweak any line to fit your voice.");
+        } else {
+          setStatus("✨ Generated with AI. Tweak any line to fit your voice.");
+        }
       })
       .catch(function (err) {
         var why = (err && err.message) || "unavailable";
         // Graceful fallback to the instant local generator.
         generateLocal();
-        if (why === "rate_limited") setStatus("Daily AI limit reached — showing an instant template plan instead.");
+        if (why === "rate_limited") {
+          setStatus("Daily free AI limit reached — here's an instant template plan. Go Pro for unlimited.");
+          var pw = document.getElementById("paywall"); if (pw && !getLicense()) pw.style.display = "block";
+        }
         else if (why === "ai_disabled") setStatus("AI isn't enabled on this demo — showing an instant template plan instead.");
         else setStatus("Couldn't reach AI just now — showing an instant template plan instead.");
       })
@@ -227,6 +255,37 @@
   });
   var csvBtn = document.getElementById("csvBtn");
   if (csvBtn) csvBtn.addEventListener("click", downloadCSV);
+
+  /* ---------- license key entry ---------- */
+  var haveKeyBtn = document.getElementById("haveKeyBtn");
+  var keyEntry = document.getElementById("keyEntry");
+  if (haveKeyBtn && keyEntry) {
+    haveKeyBtn.addEventListener("click", function () {
+      keyEntry.style.display = keyEntry.style.display === "block" ? "none" : "block";
+      var ki = document.getElementById("keyInput"); if (ki) ki.focus();
+    });
+  }
+  var keySave = document.getElementById("keySave");
+  if (keySave) {
+    keySave.addEventListener("click", function () {
+      var ki = document.getElementById("keyInput");
+      var msg = document.getElementById("keyMsg");
+      var val = ki && ki.value ? ki.value.trim() : "";
+      if (!val) { if (msg) { msg.textContent = "Paste your key first."; msg.style.color = "var(--ink-3)"; } return; }
+      setLicense(val);
+      if (msg) { msg.textContent = "Checking your key…"; msg.style.color = "var(--ink-3)"; }
+      // Validate by generating — the response's pro flag confirms the license.
+      setStatus("");
+      generateAI();
+      setTimeout(function () {
+        if (getLicense() && document.getElementById("proBadge").style.display === "block") {
+          if (msg) { msg.textContent = "Unlocked! Enjoy Pro."; msg.style.color = "#0a7d3c"; }
+        }
+      }, 1200);
+    });
+  }
+
+  reflectProState();
 
   var nav = document.getElementById("nav");
   var toggle = document.getElementById("navToggle");

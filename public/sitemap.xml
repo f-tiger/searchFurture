@@ -4,10 +4,12 @@
   <url><loc>https://searchfurture.tuoqiantu.workers.dev/tools/</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://searchfurture.tuoqiantu.workers.dev/tools/content-calendar/</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://searchfurture.tuoqiantu.workers.dev/tools/hook-generator/</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://searchfurture.tuoqiantu.workers.dev/pricing/</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://searchfurture.tuoqiantu.workers.dev/blog/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://searchfurture.tuoqiantu.workers.dev/blog/content-consistency-solo-founder/</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://searchfurture.tuoqiantu.workers.dev/blog/ai-writer-vs-ai-marketing-manager/</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://searchfurture.tuoqiantu.workers.dev/blog/content-system-zero-audience/</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://searchfurture.tuoqiantu.workers.dev/blog/how-to-make-a-content-calendar/</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://searchfurture.tuoqiantu.workers.dev/privacy/</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://searchfurture.tuoqiantu.workers.dev/terms/</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
 </urlset>

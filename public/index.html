@@ -283,36 +283,36 @@
 <section class="section diff" id="pricing">
   <div class="wrap">
     <div class="section-head">
-      <span class="eyebrow">Early access</span>
-      <h2>Lock in founder pricing</h2>
-      <p>We're onboarding a small first cohort. Join the waitlist to claim early-access rates before public launch.</p>
+      <span class="eyebrow">Pricing</span>
+      <h2>Start today, or join the waitlist</h2>
+      <p>Pro is live now with self-serve checkout — unlimited AI content in your brand voice. Not ready? Join the waitlist and lock in founder pricing.</p>
     </div>
     <div class="price-grid">
       <div class="plan reveal">
-        <h3>Starter</h3>
-        <p class="desc">One brand, the essentials</p>
-        <div class="amt">$19 <span>/ mo · early access</span></div>
+        <h3>Free tools</h3>
+        <p class="desc">Try the engine, no signup</p>
+        <div class="amt">$0 <span>/ forever</span></div>
         <ul>
-          <li>1 brand workspace</li>
-          <li>Weekly content plan</li>
-          <li>2 platforms</li>
-          <li>Brand voice engine</li>
+          <li>Content calendar generator</li>
+          <li>Hook generator</li>
+          <li>A few AI generations / day</li>
+          <li>Local templates always free</li>
         </ul>
-        <a href="#waitlist" class="btn btn-ghost btn-block">Join waitlist</a>
+        <a href="tools/" class="btn btn-ghost btn-block">Open free tools</a>
       </div>
       <div class="plan featured reveal">
-        <span class="badge">Most popular</span>
+        <span class="badge">Live now</span>
         <h3>Pro</h3>
-        <p class="desc">Full autopilot for one business</p>
-        <div class="amt">$49 <span>/ mo · early access</span></div>
+        <p class="desc">Unlimited content in your voice</p>
+        <div class="amt">$19 <span>/ mo</span></div>
         <ul>
-          <li>Everything in Starter</li>
-          <li>All platforms, native formatting</li>
-          <li>Auto-scheduling</li>
-          <li>Performance learning loop</li>
-          <li>Plain-English analytics</li>
+          <li>Unlimited AI content plans</li>
+          <li>Highest-quality model (Opus)</li>
+          <li>All platforms &amp; angles</li>
+          <li>License key unlocks every tool</li>
+          <li>Cancel anytime</li>
         </ul>
-        <a href="#waitlist" class="btn btn-primary btn-block">Join waitlist</a>
+        <button type="button" class="btn btn-primary btn-block" data-checkout data-plan="pro">Start Pro — $19/mo →</button>
       </div>
       <div class="plan reveal">
         <h3>Agency</h3>
@@ -327,6 +327,9 @@
         <a href="#waitlist" class="btn btn-ghost btn-block">Talk to us</a>
       </div>
     </div>
+    <p style="text-align:center;margin:22px 0 0;font-size:14px;color:var(--ink-3);">
+      Secure checkout by Stripe · <a href="pricing/" style="color:var(--brand-ink);text-decoration:underline;">See full pricing &amp; FAQ</a>
+    </p>
   </div>
 </section>
 
@@ -429,7 +432,7 @@
           <li><a href="tools/content-calendar/">Free content calendar</a></li>
           <li><a href="tools/hook-generator/">Free hook generator</a></li>
           <li><a href="blog/">Blog</a></li>
-          <li><a href="#pricing">Pricing</a></li>
+          <li><a href="pricing/">Pricing</a></li>
         </ul>
       </div>
       <div>
@@ -444,23 +447,25 @@
       <div>
         <h5>Get started</h5>
         <ul>
+          <li><a href="pricing/">Start Pro — $19/mo</a></li>
+          <li><a href="tools/">Try the free tools</a></li>
           <li><a href="#waitlist">Join the waitlist</a></li>
-          <li><a href="#try">See a sample</a></li>
         </ul>
       </div>
     </div>
     <p class="disclaimer">
-      Brandloop is a pre-launch product in early validation. "Brandloop" is a working name; the sample generator produces illustrative
-      output locally and does not yet create real content. Market figures are from the cited public sources. Joining the waitlist places
-      no obligation and shares your email only with the Brandloop team to contact you about the launch.
+      Brandloop Pro is live: the AI tools generate real content in your brand voice today. Full autopilot (auto-scheduling and the
+      performance learning loop) is rolling out — Pro members get it first. The on-page sample generator runs locally and is illustrative.
+      Market figures are from the cited public sources. Pro is billed monthly via Stripe and you can cancel anytime.
     </p>
     <div class="footer-bottom">
-      <span>© 2026 Brandloop · Early access · <a href="privacy/">Privacy</a></span>
+      <span>© 2026 Brandloop · <a href="pricing/">Pricing</a> · <a href="privacy/">Privacy</a> · <a href="terms/">Terms</a></span>
       <span>Plan · Create · Publish · Learn — on a loop</span>
     </div>
   </div>
 </footer>
 
 <script src="assets/js/main.js"></script>
+<script src="assets/js/checkout.js"></script>
 </body>
 </html>
