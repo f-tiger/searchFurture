@@ -75,41 +75,51 @@ python3 -m http.server 8080 --directory public   # 纯静态预览
 
 > 注：这是迈向真实产品的第一刀——免费工具从模板升级为真 AI，更强的获客磁石。
 
-## 自助计费与许可（Stripe · 可选 · 优雅降级）
+## 自助计费与许可（可插拔支付层 · 默认 Creem · 优雅降级）
 
 把"免费工具 + waitlist"升级为**可自助成交的商业闭环**：付费即得 License Key，
 凭 key 解锁所有工具（去掉免费日限、用最高质量模型）。代码全部 drop-in、缺配置即降级
 回 waitlist，**永不让漏斗断头**。
 
-- 路由（`worker.js` → `lib/billing.js`）：
-  - `POST /api/checkout` — 创建 Stripe Checkout Session（inline price_data，**店主无需在
-    Stripe 后台预建商品**），返回 `{ok,url}`；前端 `assets/js/checkout.js` 跳转到 Stripe。
-  - `POST /api/stripe-webhook` — 校验签名（Web Crypto HMAC-SHA256），`checkout.session.completed`
-    时铸造 License（`lic:<token>` 存 KV）+ `sess:<id>→token`（7 天）+ 可选 webhook 通知。
-  - `GET /api/license?session_id=...` — 成功页 `public/success/` 轮询取回 License Key。
+> **为什么默认 Creem 而非 Stripe（经调研收窄）**：店主是中国大陆主体，**Stripe 大陆开不了户**
+> （需 Atlas 注册美国 LLC，重人工介入）；Polar/LemonSqueezy 底层走 Stripe Connect 同样卡大陆。
+> **Creem 是 Merchant of Record**：支持大陆个人开户、**提现到支付宝**、自动代缴全球税，门槛最低、
+> 最契合"少人工介入"。故 `PAYMENT_PROVIDER` 默认 `creem`，`stripe` 作为将来注册海外公司后的适配器保留。
+> 不上 crypto：验证期转化率会崩，且大陆 U→CNY 出金涉法律红线（仅留架构可扩展位）。
+
+- **可插拔架构**（`lib/billing.js`）：`PAYMENT_PROVIDER`（`creem`|`stripe`，默认 `creem`）选择 provider，
+  各 provider 实现 `createCheckout` + `parseWebhook`，共享 license 铸造/校验内核（多 ref 反查）。
+- 路由（`worker.js`）：
+  - `POST /api/checkout` — 按 provider 创建 hosted checkout，返回 `{ok,url}`；前端 `assets/js/checkout.js` 跳转。
+  - `POST /api/creem-webhook` — 校验 `creem-signature`（HMAC-SHA256 hex of raw body），`checkout.completed`
+    铸造 License（`lic:<token>` 存 KV）+ 把 checkout_id/request_id/order_id 都映射到 `sess:<ref>→token`（7 天）。
+  - `POST /api/stripe-webhook` — Stripe 适配器（`t=,v1=` 签名，`checkout.session.completed`）。
+  - `GET /api/license?ref=...`（兼容 `session_id`/`checkout_id`/`request_id`/`order_id`）— 成功页轮询取回 key。
   - `verifyLicense()` 被 `/api/generate` 调用：持 key 者跳过免费限额、走 `GEN_MODEL_PRO`。
-- 前端：`public/pricing/`（定价页+FAQ）、`public/success/`（取回并展示 key，存 localStorage
-  `bl_license`）、内容日历工具内置 paywall（命中免费日限弹"Go Pro"）+ License 输入框。
-- 上线所需配置（Worker → Settings）：
-  - `STRIPE_SECRET_KEY`（Secret，必填才启用计费）、`STRIPE_WEBHOOK_SECRET`（Secret，校验 webhook）。
-  - 可选：`PRICE_USD_CENTS`（默认 1900=$19/mo）、`PLAN_NAME`（默认 "Brandloop Pro"）、
-    `PUBLIC_BASE_URL`、`LEAD_WEBHOOK_URL`（成交实时通知）。
-  - Stripe Dashboard → Webhooks 新增端点 `https://<域名>/api/stripe-webhook`，监听
-    `checkout.session.completed`，把签名密钥填入 `STRIPE_WEBHOOK_SECRET`。
-- **第一次成交所需的人工动作**（只此一次，无法由 AI 代办）：店主自建 Stripe 账号（KYC/收款），
-  填上述两个 Secret。配齐后整条链路即全自动：访客点击 → Stripe 付款 → 自动发 key → 工具解锁。
+- 前端：`public/pricing/`、`public/success/`（provider 无关，存 localStorage `bl_license`）、
+  内容日历工具内置 paywall + License 输入框。
+- 上线配置（Worker → Settings）— **默认 Creem**：
+  - `CREEM_API_KEY`（Secret，必填才启用计费）、`CREEM_PRODUCT_ID`（在 Creem 后台建一个 $19/mo 产品，取其 id）、
+    `CREEM_WEBHOOK_SECRET`（Secret，校验 webhook）；可选 `CREEM_TEST=1` 走 `test-api.creem.io`。
+  - Creem Dashboard → Developers → Webhooks 新增端点 `https://<域名>/api/creem-webhook`，监听 `checkout.completed`。
+  - 共享可选：`PRICE_USD_CENTS`（1900）、`PLAN_NAME`、`PUBLIC_BASE_URL`、`LEAD_WEBHOOK_URL`（成交实时通知）。
+  - 切 Stripe：设 `PAYMENT_PROVIDER=stripe` + `STRIPE_SECRET_KEY` + `STRIPE_WEBHOOK_SECRET`（端点 `/api/stripe-webhook`）。
+- **第一次成交所需的人工动作**（只此一次，无法由 AI 代办）：店主在 Creem 实名注册（KYC）、绑支付宝收款、
+  建一个 Pro 产品、填上述 3 个配置。配齐后整条链路即全自动：访客点击 → Creem 付款 → 自动发 key → 工具解锁。
+  （比 Stripe 的"注册美国公司"轻得多。）
 
 ### 成交链路自测（`scripts/e2e-sale.mjs`）
 
-真实跑通"成交"管线的冒烟测试：伪造签名被拒 → 真·Stripe 签名的 `checkout.session.completed`
-被接受 → KV 铸造 License → 买家取回 key。**已用本地真 Worker（`wrangler dev`）跑通 8/8**。
+真实跑通"成交"管线的冒烟测试（Creem + Stripe 双 provider）：伪造签名被拒 → 真签名的
+`checkout.completed`/`checkout.session.completed` 被接受 → KV 铸造 License → 买家多 ref 取回 key。
+**已用本地真 Worker（`wrangler dev`）跑通 10/10**。
 
 ```bash
-# 本地：.dev.vars 里设 STRIPE_WEBHOOK_SECRET=whsec_e2e_proof_secret
+# 本地：.dev.vars 里设 CREEM_WEBHOOK_SECRET / STRIPE_WEBHOOK_SECRET 的测试值
 npx wrangler dev --port 8787 --local      # 终端 A
 node scripts/e2e-sale.mjs                  # 终端 B
 # 生产（配好真 webhook secret 后，可随时验证线上成交链路）：
-BASE=https://searchfurture.tuoqiantu.workers.dev STRIPE_WEBHOOK_SECRET=whsec_live_xxx node scripts/e2e-sale.mjs
+BASE=https://searchfurture.tuoqiantu.workers.dev CREEM_WEBHOOK_SECRET=whsec_live_xxx node scripts/e2e-sale.mjs
 ```
 
 ## 表单后端（已接 Cloudflare Pages Functions）

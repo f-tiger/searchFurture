@@ -78,7 +78,9 @@
 (function () {
   "use strict";
   var params = new URLSearchParams(location.search);
-  var sessionId = params.get("session_id") || "";
+  // Works across providers: Stripe → session_id; Creem → checkout_id / request_id.
+  var sessionId = params.get("ref") || params.get("session_id") || params.get("checkout_id") ||
+                  params.get("request_id") || params.get("order_id") || "";
   var pending = document.getElementById("licensePending");
   var ready = document.getElementById("licenseReady");
   var delayed = document.getElementById("licenseDelayed");
@@ -106,7 +108,7 @@
   function poll() {
     if (!sessionId) { clearInterval(dotTimer); show(delayed); return; }
     tries++;
-    fetch("/api/license?session_id=" + encodeURIComponent(sessionId))
+    fetch("/api/license?ref=" + encodeURIComponent(sessionId))
       .then(function (r) { return r.json(); })
       .then(function (data) {
         if (data && data.ok && data.token) {

@@ -10,7 +10,7 @@
 import { handleLead } from "./lib/lead.js";
 import { handleLeadsAdmin } from "./lib/admin.js";
 import { handleGenerate } from "./lib/generate.js";
-import { handleCheckout, handleStripeWebhook, handleLicense } from "./lib/billing.js";
+import { handleCheckout, handleCreemWebhook, handleStripeWebhook, handleLicense } from "./lib/billing.js";
 
 export default {
   async fetch(request, env) {
@@ -27,6 +27,9 @@ export default {
     }
     if (url.pathname === "/api/checkout") {
       return handleCheckout(request, env);
+    }
+    if (url.pathname === "/api/creem-webhook") {
+      return handleCreemWebhook(request, env);
     }
     if (url.pathname === "/api/stripe-webhook") {
       return handleStripeWebhook(request, env);

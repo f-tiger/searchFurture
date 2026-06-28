@@ -1,9 +1,10 @@
 /* ==========================================================================
    Brandloop — self-serve checkout
-   Any element with [data-checkout] starts a Stripe Checkout session via
-   POST /api/checkout and redirects to Stripe. If billing isn't configured
-   yet (billing_disabled) or anything fails, it degrades gracefully to the
-   waitlist so the funnel never dead-ends.
+   Any element with [data-checkout] starts a hosted checkout session via
+   POST /api/checkout and redirects to the payment provider (Creem by default,
+   Stripe optional). If billing isn't configured yet (billing_disabled) or
+   anything fails, it degrades gracefully to the waitlist so the funnel never
+   dead-ends.
    ========================================================================== */
 (function () {
   "use strict";
@@ -31,7 +32,7 @@
       .then(function (r) { return r.json(); })
       .then(function (data) {
         if (data && data.ok && data.url) {
-          location.href = data.url; // → Stripe Checkout
+          location.href = data.url; // → hosted checkout (Creem / Stripe)
           return;
         }
         // billing_disabled or upstream error → soft-land on the waitlist.
