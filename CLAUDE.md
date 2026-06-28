@@ -99,6 +99,19 @@ python3 -m http.server 8080 --directory public   # 纯静态预览
 - **第一次成交所需的人工动作**（只此一次，无法由 AI 代办）：店主自建 Stripe 账号（KYC/收款），
   填上述两个 Secret。配齐后整条链路即全自动：访客点击 → Stripe 付款 → 自动发 key → 工具解锁。
 
+### 成交链路自测（`scripts/e2e-sale.mjs`）
+
+真实跑通"成交"管线的冒烟测试：伪造签名被拒 → 真·Stripe 签名的 `checkout.session.completed`
+被接受 → KV 铸造 License → 买家取回 key。**已用本地真 Worker（`wrangler dev`）跑通 8/8**。
+
+```bash
+# 本地：.dev.vars 里设 STRIPE_WEBHOOK_SECRET=whsec_e2e_proof_secret
+npx wrangler dev --port 8787 --local      # 终端 A
+node scripts/e2e-sale.mjs                  # 终端 B
+# 生产（配好真 webhook secret 后，可随时验证线上成交链路）：
+BASE=https://searchfurture.tuoqiantu.workers.dev STRIPE_WEBHOOK_SECRET=whsec_live_xxx node scripts/e2e-sale.mjs
+```
+
 ## 表单后端（已接 Cloudflare Pages Functions）
 
 留资表单 AJAX 提交到 `POST /api/lead`，由 `functions/api/lead.js` 处理。
