@@ -2,6 +2,8 @@
 
 ## 部署偏好（重要 · 默认遵循）
 
+- **🟢 标准授权（用户已确认）：开发完成后，直接把功能分支合并到 `main` 并推送上线，
+  无需每次再问。** 用户只给方向，部署默认自动完成。
 - **默认部署平台：Cloudflare + GitHub（免费额度大）。不要用 Netlify。**
 - 结构为 **Workers + Static Assets**：`wrangler.toml`（`main = worker.js`、
   `[assets] directory = "./public"`）+ `worker.js`（服务静态资源 + `POST /api/lead`）+
