@@ -9,6 +9,7 @@
  */
 import { handleLead } from "./lib/lead.js";
 import { handleLeadsAdmin } from "./lib/admin.js";
+import { handleGenerate } from "./lib/generate.js";
 
 export default {
   async fetch(request, env) {
@@ -19,6 +20,9 @@ export default {
     }
     if (url.pathname === "/api/leads") {
       return handleLeadsAdmin(request, env);
+    }
+    if (url.pathname === "/api/generate") {
+      return handleGenerate(request, env);
     }
 
     // Fallback to static assets (returns the asset, or a 404 from the asset layer).

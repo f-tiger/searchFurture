@@ -46,6 +46,20 @@ python3 -m http.server 8080 --directory public   # 纯静态预览
 # 或带 Worker/API：npx wrangler dev
 ```
 
+## AI 生成（可选 · 真·Claude）
+
+免费内容日历工具的"✨ Generate with AI"按钮调用 `POST /api/generate`（`lib/generate.js`），
+经 Anthropic Messages API 用 Claude 生成按品牌口吻的内容计划。**默认关闭、优雅降级**：
+没设 key 或调用失败时，前端自动回退到本地模板生成，绝不报错。
+
+启用与配置（Worker → Settings）：
+- `ANTHROPIC_API_KEY`（加密 Secret）— 设了才启用真 AI。
+- `GEN_MODEL`（可选）— 默认 `claude-haiku-4-5`（公开工具按次计费，默认偏省成本）；
+  想要更高质量可设 `claude-opus-4-8`。
+- `GEN_DAILY_LIMIT`（可选，默认 8）— 每 IP/天调用上限（防滥用/控成本，依赖 KV `LEADS`）。
+
+> 注：这是迈向真实产品的第一刀——免费工具从模板升级为真 AI，更强的获客磁石。
+
 ## 表单后端（已接 Cloudflare Pages Functions）
 
 留资表单 AJAX 提交到 `POST /api/lead`，由 `functions/api/lead.js` 处理。
