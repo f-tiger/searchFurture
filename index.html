@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>通税云 TongTax · 平台中立的 AI 出口退税与跨境财税合规助手</title>
+<meta name="description" content="通税云 TongTax 是面向中国外贸与出海企业的平台中立 AI 助手，专注出口退税核算、单证四流合一核验、申报合规预警与跨平台数据归集。金税四期与《增值税法》合规时代，让退税更快、更稳、更安全。" />
+<meta name="keywords" content="出口退税,跨境财税合规,金税四期,增值税法,外贸SaaS,出海合规,退税软件,跨境电商财税" />
+<meta property="og:title" content="通税云 TongTax · AI 出口退税与跨境财税合规助手" />
+<meta property="og:description" content="平台中立、专注退税深度、出错敢担责。为中国出海企业把退税做快、做稳、做合规。" />
+<meta property="og:type" content="website" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232f5bff'/%3E%3Ctext x='16' y='22' font-size='16' font-family='Arial' font-weight='bold' fill='white' text-anchor='middle'%3E税%3C/text%3E%3C/svg%3E" />
+<link rel="stylesheet" href="assets/css/styles.css" />
+<noscript><style>.reveal{opacity:1 !important;transform:none !important;}</style></noscript>
+</head>
+<body>
+
+<!-- ============ NAV ============ -->
+<header class="nav" id="nav">
+  <div class="wrap nav-inner">
+    <a href="#top" class="brand">
+      <span class="logo">税</span>
+      <span>通税云<br><small>TONGTAX</small></span>
+    </a>
+    <nav class="nav-links" id="navLinks">
+      <a href="#problem">为什么是现在</a>
+      <a href="#product">产品能力</a>
+      <a href="#diff">差异化</a>
+      <a href="#audience">适用对象</a>
+      <a href="#pricing">定价</a>
+    </nav>
+    <div class="nav-cta">
+      <a href="#calc" class="btn btn-ghost">免费测算退税</a>
+      <a href="#demo" class="btn btn-primary">预约演示</a>
+      <button class="nav-toggle" id="navToggle" aria-label="菜单"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+
+<a id="top"></a>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="eyebrow">🛳 出海企业 · 平台中立 · 退税专精</span>
+      <h1>让出口退税<br><span class="grad">更快、更稳、更合规</span></h1>
+      <p class="lead">
+        通税云是面向外贸与出海企业的 AI 财税助手。我们不做"什么都浅一点"的通用工具，
+        只把<strong>出口退税与跨境财税合规</strong>这一件最容易出错、最值钱的事，做深、做透、做到敢担责。
+      </p>
+      <div class="hero-actions">
+        <a href="#demo" class="btn btn-primary">预约一对一演示 →</a>
+        <a href="#calc" class="btn btn-ghost">先免费测算应退税额</a>
+      </div>
+      <div class="hero-trust">
+        <div class="t"><b>36个月</b><span>退税申报红线，逾期视同内销</span></div>
+        <div class="t"><b>13%</b><span>部分品类最高退税率</span></div>
+        <div class="t"><b>跨平台</b><span>阿里 / Amazon / 独立站 / 线下统一归集</span></div>
+      </div>
+    </div>
+
+    <!-- Interactive refund calculator -->
+    <div class="calc" id="calc">
+      <div class="calc-head"><span class="dot"></span><h3>出口退税快速测算器</h3></div>
+      <p class="calc-sub">输入出口数据，30 秒看到大致可退税额与合规提醒</p>
+
+      <div class="field">
+        <label>出口货值（FOB，不含运保费）<span class="hint">人民币</span></label>
+        <div class="input-wrap">
+          <input type="number" id="amount" value="1000000" min="0" step="10000" />
+          <span class="unit">元</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>商品类别 / 退税率<span class="hint">按 HS 退税率档位</span></label>
+        <select id="rate">
+          <option value="13">机电、服装、家具等（13%）</option>
+          <option value="10">部分化工、塑料制品（10%）</option>
+          <option value="9">农产品深加工等（9%）</option>
+          <option value="6">部分初级加工品（6%）</option>
+          <option value="0">不予退税 / 禁止类（0%）</option>
+        </select>
+      </div>
+
+      <div class="calc-result">
+        <div class="label">预估可退增值税额</div>
+        <div class="amount" id="refund">¥115,044 <small>/ 单笔</small></div>
+        <div class="note" id="ratio">退税率 13% · 估算口径：货值 ÷ (1+13%) × 退税率</div>
+      </div>
+
+      <div class="calc-flag">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2 1 21h22L12 2Z" stroke="#e8743b" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5M12 17.5v.5" stroke="#e8743b" stroke-width="2" stroke-linecap="round"/></svg>
+        <p id="flag">注意：出口后须在 <b>36 个月</b>内完成退税申报，否则将被视同内销补缴增值税，并可能丧失退税资格。</p>
+      </div>
+      <p class="calc-note">* 仅为示意估算，实际以采购增值税专用发票、报关单与申报系统核算为准。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PROBLEM / WHY NOW ============ -->
+<section class="section pain" id="problem">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow alt">为什么是现在</span>
+      <h2>2025—2026，出海财税进入"强合规"时代</h2>
+      <p>金税四期全面上线、平台报送、《增值税法》落地——退税从"操作问题"变成"合规与风控问题"。这正是专业工具的机会窗口。</p>
+    </div>
+    <div class="pain-grid">
+      <div class="pain-card reveal">
+        <div class="big">2025</div>
+        <h4>跨境电商合规元年</h4>
+        <p>金税四期 + 平台强制报送卖家涉税信息，"灰色操作"空间快速关闭。</p>
+      </div>
+      <div class="pain-card reveal">
+        <div class="big">36<span>个月</span></div>
+        <h4>退税申报硬红线</h4>
+        <p>报关出口后须在 36 个月内申报，逾期视同内销补税，现金流与利润双杀。</p>
+      </div>
+      <div class="pain-card reveal">
+        <div class="big">2026</div>
+        <h4>《增值税法》落地</h4>
+        <p>退税凭证、四流合一举证要求趋严，缺证据即面临补税与稽查风险。</p>
+      </div>
+      <div class="pain-card reveal">
+        <div class="big">浅</div>
+        <h4>平台工具只到"勾选"</h4>
+        <p>平台的免费 AI 合规多为提示型，涉及真金白银的退税核算与担责，没人敢只靠它。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PRODUCT / FEATURES ============ -->
+<section class="section" id="product">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">产品能力</span>
+      <h2>把退税链路里最痛的环节，逐个做深</h2>
+      <p>一个嵌进你现有工作流的 AI 助手——平台中立，跨渠道归集，专注财税合规深度。</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature reveal">
+        <div class="ic">🧮</div>
+        <h3>智能退税核算</h3>
+        <p>自动匹配 HS 编码与退税率，按采购专票与报关单计算应退税额，单笔到账可预测。</p>
+        <span class="tag">核心壁垒</span>
+      </div>
+      <div class="feature reveal">
+        <div class="ic">🔗</div>
+        <h3>单证四流合一核验</h3>
+        <p>合同流、货物流、发票流、资金流自动比对，提前发现不一致，规避稽查风险。</p>
+        <span class="tag">核心壁垒</span>
+      </div>
+      <div class="feature reveal">
+        <div class="ic">🚨</div>
+        <h3>申报合规预警</h3>
+        <p>36 个月红线倒计时、单据缺失、税率错配、超期风险——主动提醒，不被动踩雷。</p>
+        <span class="tag">担责级深度</span>
+      </div>
+      <div class="feature reveal">
+        <div class="ic">🧩</div>
+        <h3>跨平台数据归集</h3>
+        <p>阿里国际站、Amazon、独立站、TikTok Shop、线下订单统一汇总，平台中立、无利益冲突。</p>
+        <span class="tag">巨头做不了</span>
+      </div>
+      <div class="feature reveal">
+        <div class="ic">💱</div>
+        <h3>资金与外汇看板</h3>
+        <p>退税款、收汇核销、外汇敞口一屏可视，把"公司整本账"管起来，而非只看前台成交。</p>
+        <span class="tag">后台洼地</span>
+      </div>
+      <div class="feature reveal">
+        <div class="ic">🤖</div>
+        <h3>AI 政策问答</h3>
+        <p>实时跟踪退税政策与地方口径，自然语言问答 + 引用原文，把专家经验产品化。</p>
+        <span class="tag">AI 赋能</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DIFFERENTIATION ============ -->
+<section class="section diff" id="diff">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">差异化</span>
+      <h2>为什么平台和 ERP 替代不了我们</h2>
+      <p>判断标准不是"巨头有没有做"，而是"它愿不愿意做、能不能做好"。</p>
+    </div>
+    <div class="diff-table">
+      <div class="diff-row head">
+        <div>能力维度</div>
+        <div class="us">通税云</div>
+        <div>平台免费 AI</div>
+        <div>传统跨境 ERP</div>
+      </div>
+      <div class="diff-row">
+        <div class="rowlabel">平台中立 / 跨渠道</div>
+        <div class="us yes">✓ 完全中立</div>
+        <div class="no">✕ 服务自家 GMV</div>
+        <div class="mid">△ 偏铺货发货</div>
+      </div>
+      <div class="diff-row">
+        <div class="rowlabel">退税核算深度</div>
+        <div class="us yes">✓ 单据级核算</div>
+        <div class="no">✕ 提示为主</div>
+        <div class="mid">△ 浅集成</div>
+      </div>
+      <div class="diff-row">
+        <div class="rowlabel">四流合一 / 稽查风控</div>
+        <div class="us yes">✓ 自动比对</div>
+        <div class="no">✕ 不覆盖</div>
+        <div class="no">✕ 不覆盖</div>
+      </div>
+      <div class="diff-row">
+        <div class="rowlabel">出错可担责</div>
+        <div class="us yes">✓ 服务+保障</div>
+        <div class="no">✕ 免责声明</div>
+        <div class="mid">△ 工具自负</div>
+      </div>
+      <div class="diff-row">
+        <div class="rowlabel">本地化负担</div>
+        <div class="us yes">✓ 客户在国内·零本地化</div>
+        <div class="mid">△</div>
+        <div class="mid">△</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ AUDIENCE ============ -->
+<section class="section" id="audience">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">适用对象</span>
+      <h2>谁最需要通税云</h2>
+      <p>只要你在做出口、要退税、被合规追着跑——我们就是为你做的。</p>
+    </div>
+    <div class="aud-grid">
+      <div class="aud reveal"><div class="ic">🏭</div><h4>外贸工厂 / 工贸一体</h4><p>自营出口、退税额大，最怕单证不齐与超期，需要把退税做成可预测现金流。</p></div>
+      <div class="aud reveal"><div class="ic">📦</div><h4>跨境电商卖家</h4><p>多平台、多店铺、9610/9710 模式，急需跨渠道数据归集与合规报送。</p></div>
+      <div class="aud reveal"><div class="ic">🌐</div><h4>出海品牌 / DTC</h4><p>独立站 + 海外仓 + 多市场，后台财税资金一团乱，要一屏看清整本账。</p></div>
+      <div class="aud reveal"><div class="ic">🤝</div><h4>外综服 / 代理</h4><p>批量服务中小客户，需要标准化、可规模化的退税与合规作业平台。</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MARKET DATA ============ -->
+<section class="section market">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow alt">市场与趋势</span>
+      <h2>一个被低估、且政策强驱动的洼地</h2>
+      <p>B 端税务付费意愿强（中国约 90% 税负由企业承担），叠加合规新规，需求正在被快速激活。</p>
+    </div>
+    <div class="market-grid">
+      <div class="metric reveal">
+        <b>53亿</b>
+        <h4>跨境出口电商 ERP 市场（2028E）</h4>
+        <p>2023–2028 CAGR ≈ 14.9%，财税合规为新增长极。<a href="https://www.lingxing.com/contents/3018.html" target="_blank" rel="noopener">来源</a></p>
+      </div>
+      <div class="metric reveal">
+        <b>淘金期</b>
+        <h4>财税 SaaS 进入新周期</h4>
+        <p>AI 驱动财税服务从人工记账走向智能 SaaS。<a href="https://36kr.com/p/2034691255086080" target="_blank" rel="noopener">来源 · 36氪</a></p>
+      </div>
+      <div class="metric reveal">
+        <b>合规元年</b>
+        <h4>2025 跨境电商全面合规</h4>
+        <p>金税四期 + 平台报送，退税合规成刚需。<a href="https://www.zhucehk.com/accounting-and-tax-services/816.html" target="_blank" rel="noopener">来源</a></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HOW IT WORKS ============ -->
+<section class="section section--tight">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">如何落地</span>
+      <h2>从服务起步，到产品规模化</h2>
+      <p>"服务养产品"——先用专业服务跑通现金流，再把重复流程沉淀为 SaaS。</p>
+    </div>
+    <div class="steps">
+      <div class="step reveal"><div class="n">1</div><h4>接入与诊断</h4><p>对接你的报关、发票、平台与银行数据，一次性体检退税与合规风险点。</p></div>
+      <div class="step reveal"><div class="n">2</div><h4>核算与预警</h4><p>AI 自动核算应退税额、核验四流合一、倒计时提醒，专家在关键节点把关。</p></div>
+      <div class="step reveal"><div class="n">3</div><h4>沉淀为系统</h4><p>把你的退税作业固化进 SaaS，越用越快、越用越稳，形成可规模化的能力。</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PRICING ============ -->
+<section class="section diff" id="pricing">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">定价</span>
+      <h2>按你所处的阶段付费</h2>
+      <p>早期共创伙伴享受深度服务与优先功能。价格为示意，最终以方案沟通为准。</p>
+    </div>
+    <div class="price-grid">
+      <div class="plan reveal">
+        <h3>退税体检</h3>
+        <p class="desc">一次性服务，适合先验证价值</p>
+        <div class="amt">¥0 <span>起 · 首次诊断</span></div>
+        <ul>
+          <li>退税与合规风险体检报告</li>
+          <li>36 个月超期单据排查</li>
+          <li>四流合一一致性初检</li>
+          <li>1 对 1 顾问解读</li>
+        </ul>
+        <a href="#demo" class="btn btn-ghost btn-block">预约体检</a>
+      </div>
+      <div class="plan featured reveal">
+        <span class="badge">最受欢迎</span>
+        <h3>标准订阅</h3>
+        <p class="desc">服务 + SaaS，适合持续出口的成长型企业</p>
+        <div class="amt">¥按量 <span>/ 月 · 按单据量计</span></div>
+        <ul>
+          <li>智能退税核算与申报预警</li>
+          <li>跨平台数据归集</li>
+          <li>四流合一自动核验</li>
+          <li>AI 政策问答 + 专家答疑</li>
+          <li>资金与外汇看板</li>
+        </ul>
+        <a href="#demo" class="btn btn-primary btn-block">预约演示</a>
+      </div>
+      <div class="plan reveal">
+        <h3>企业 / 外综服版</h3>
+        <p class="desc">多主体、批量客户、私有化与 API</p>
+        <div class="amt">定制 <span>· 年度方案</span></div>
+        <ul>
+          <li>多公司主体 / 多客户管理</li>
+          <li>开放 API 与系统对接</li>
+          <li>私有化 / 独立数据隔离</li>
+          <li>专属客户成功与 SLA</li>
+        </ul>
+        <a href="#demo" class="btn btn-ghost btn-block">联系我们</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA / LEAD FORM ============ -->
+<section class="section cta" id="demo">
+  <div class="wrap cta-grid">
+    <div>
+      <h2>把退税这件事，交给专业的工具</h2>
+      <p>留下信息，我们会安排一次 30 分钟的退税与合规诊断，帮你算清能退多少、哪里有风险。</p>
+      <ul>
+        <li>免费、无承诺、不绕弯</li>
+        <li>由懂通关退税 + 软件的团队亲自对接</li>
+        <li>数据保密，仅用于本次诊断</li>
+      </ul>
+    </div>
+    <div class="form-card">
+      <h3>预约免费退税诊断</h3>
+      <p class="sub">填写后 1 个工作日内联系你</p>
+      <form name="lead" method="POST" data-netlify="true" netlify-honeypot="bot-field" id="leadForm">
+        <input type="hidden" name="form-name" value="lead" />
+        <p style="display:none"><label>不要填写：<input name="bot-field" /></label></p>
+        <div class="form-row">
+          <label>公司名称</label>
+          <input type="text" name="company" placeholder="例如：XX 进出口有限公司" required />
+        </div>
+        <div class="form-row">
+          <label>称呼</label>
+          <input type="text" name="name" placeholder="您的称呼" required />
+        </div>
+        <div class="form-row">
+          <label>联系方式（手机 / 微信 / 邮箱）</label>
+          <input type="text" name="contact" placeholder="方便我们联系您" required />
+        </div>
+        <div class="form-row">
+          <label>业务类型</label>
+          <select name="business">
+            <option>外贸工厂 / 工贸一体</option>
+            <option>跨境电商卖家</option>
+            <option>出海品牌 / DTC</option>
+            <option>外综服 / 代理</option>
+            <option>其他</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label>年出口规模（选填）</label>
+          <select name="scale">
+            <option>暂不透露</option>
+            <option>500 万以下</option>
+            <option>500 万 – 5000 万</option>
+            <option>5000 万 – 5 亿</option>
+            <option>5 亿以上</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">提交，预约诊断 →</button>
+      </form>
+      <div class="form-ok" id="formOk">✅ 已收到！我们会在 1 个工作日内与你联系。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-top">
+      <div>
+        <div class="brand"><span class="logo">税</span><span>通税云 TongTax</span></div>
+        <p>面向中国外贸与出海企业的平台中立 AI 财税助手。专注出口退税与跨境财税合规，让退税更快、更稳、更安全。</p>
+      </div>
+      <div>
+        <h5>产品</h5>
+        <ul>
+          <li><a href="#product">退税核算</a></li>
+          <li><a href="#product">合规预警</a></li>
+          <li><a href="#product">跨平台归集</a></li>
+          <li><a href="#calc">退税测算器</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>方案</h5>
+        <ul>
+          <li><a href="#audience">外贸工厂</a></li>
+          <li><a href="#audience">跨境卖家</a></li>
+          <li><a href="#audience">出海品牌</a></li>
+          <li><a href="#pricing">定价</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>联系</h5>
+        <ul>
+          <li><a href="#demo">预约演示</a></li>
+          <li><a href="#calc">免费测算</a></li>
+        </ul>
+      </div>
+    </div>
+    <p class="disclaimer">
+      免责声明：本网站为产品概念展示，所列市场数据来自公开来源并标注出处，退税测算器结果仅为示意估算，
+      不构成税务、法律或投资建议。实际退税以采购增值税专用发票、报关单及税务机关申报系统核算为准。
+      涉及具体合规事项，请咨询持牌税务师或专业机构。
+    </p>
+    <div class="footer-bottom">
+      <span>© 2026 通税云 TongTax · 概念演示站</span>
+      <span>平台中立 · 退税专精 · 出海企业的财税后台</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/main.js"></script>
+</body>
+</html>
