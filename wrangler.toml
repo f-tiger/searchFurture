@@ -11,6 +11,7 @@ compatibility_date = "2026-06-28"
 [assets]
 directory = "./public"
 binding = "ASSETS"
+not_found_handling = "404-page"
 
 # Persist waitlist signups to KV (version-controlled so deploys never drop the binding).
 [[kv_namespaces]]
