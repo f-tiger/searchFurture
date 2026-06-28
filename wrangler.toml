@@ -1,7 +1,7 @@
 # Cloudflare Workers + Static Assets configuration for Brandloop.
 # Deploy with: npx wrangler deploy  (Cloudflare's Git integration runs this automatically)
 
-name = "brandloop"
+name = "searchfurture"
 main = "worker.js"
 compatibility_date = "2026-06-28"
 
