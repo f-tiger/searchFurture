@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Free AI Content Calendar Generator — plan a week of posts in seconds | Brandloop</title>
+<meta name="description" content="Free content calendar generator for founders and small teams. Enter your business, pick your platforms, and instantly get a ready-to-post weekly content plan with hooks and angles. No signup required." />
+<meta name="keywords" content="content calendar generator, free content calendar, AI content calendar, social media planner, content plan generator, weekly content calendar, post ideas generator" />
+<link rel="canonical" href="https://searchfurture.tuoqiantu.workers.dev/tools/content-calendar/" />
+<meta property="og:title" content="Free AI Content Calendar Generator" />
+<meta property="og:description" content="Enter your business, pick platforms, get a ready-to-post weekly content calendar in seconds. Free, no signup." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://searchfurture.tuoqiantu.workers.dev/tools/content-calendar/" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Free AI Content Calendar Generator" />
+<meta name="twitter:description" content="Enter your business, pick platforms, get a ready-to-post weekly content calendar in seconds. Free, no signup." />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232f5bff'/%3E%3Ctext x='16' y='22' font-size='17' font-family='Arial' font-weight='bold' fill='white' text-anchor='middle'%3E%E2%9F%B3%3C/text%3E%3C/svg%3E" />
+<link rel="stylesheet" href="../../assets/css/styles.css" />
+<noscript><style>.reveal{opacity:1 !important;transform:none !important;}</style></noscript>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Free AI Content Calendar Generator",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "description": "Enter your business, pick your platforms, and instantly get a ready-to-post weekly content calendar with hooks and angles."
+}
+</script>
+</head>
+<body>
+
+<!-- ============ NAV ============ -->
+<header class="nav" id="nav">
+  <div class="wrap nav-inner">
+    <a href="../../" class="brand">
+      <span class="logo">⟳</span>
+      <span>Brandloop<br><small>AI MARKETING</small></span>
+    </a>
+    <nav class="nav-links" id="navLinks">
+      <a href="../../#how">How it works</a>
+      <a href="../../#features">Features</a>
+      <a href="../../#pricing">Pricing</a>
+      <a href="../../#faq">FAQ</a>
+    </nav>
+    <div class="nav-cta">
+      <a href="../../#waitlist" class="btn btn-primary">Join the waitlist</a>
+      <button class="nav-toggle" id="navToggle" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+
+<!-- ============ TOOL HERO ============ -->
+<section class="tool-hero">
+  <div class="wrap">
+    <a href="../../" class="tool-back">← Back to Brandloop</a>
+    <span class="eyebrow">Free tool · no signup</span>
+    <h1>Free <span class="grad">AI Content Calendar</span> Generator</h1>
+    <p>Tell us what your business does and pick your platforms. Get a ready-to-post weekly content
+       plan — with hooks and angles — in seconds. Copy it, download it, post it.</p>
+  </div>
+</section>
+
+<!-- ============ TOOL PANEL ============ -->
+<section class="section--tight">
+  <div class="wrap" style="max-width:920px;">
+    <div class="tool-panel">
+      <div class="tool-controls">
+        <div class="field">
+          <label for="biz">What does your business do?</label>
+          <input type="text" id="biz" maxlength="90" value="a productivity app for remote teams" />
+        </div>
+        <div class="field">
+          <label for="tone">Tone</label>
+          <select id="tone">
+            <option value="practical">Practical &amp; helpful</option>
+            <option value="bold">Bold &amp; opinionated</option>
+            <option value="friendly">Friendly &amp; casual</option>
+            <option value="expert">Expert &amp; authoritative</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="margin-top:18px;">
+        <label style="display:block;font-size:13px;font-weight:600;color:var(--ink-2);margin-bottom:8px;">Platforms</label>
+        <div class="chip-group" id="platforms">
+          <label class="chip on"><input type="checkbox" value="X" checked />X / Twitter</label>
+          <label class="chip on"><input type="checkbox" value="LinkedIn" checked />LinkedIn</label>
+          <label class="chip on"><input type="checkbox" value="Instagram" checked />Instagram</label>
+          <label class="chip"><input type="checkbox" value="Newsletter" />Newsletter</label>
+          <label class="chip"><input type="checkbox" value="TikTok/Reels" />TikTok / Reels</label>
+          <label class="chip"><input type="checkbox" value="Facebook" />Facebook</label>
+        </div>
+      </div>
+
+      <div class="tool-row2">
+        <div class="field">
+          <label for="perWeek">Posts per week</label>
+          <select id="perWeek">
+            <option>3</option><option selected>5</option><option>7</option><option>10</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="weeks">Weeks to plan</label>
+          <select id="weeks">
+            <option selected>1</option><option>2</option><option>4</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" id="genBtn" type="button" style="flex:0 0 auto;">Generate calendar</button>
+      </div>
+
+      <div class="tool-actions" id="toolActions" style="display:none;">
+        <button class="btn btn-ghost" id="copyBtn" type="button">Copy all</button>
+        <button class="btn btn-ghost" id="csvBtn" type="button">Download CSV</button>
+        <button class="btn btn-ghost" id="regenBtn" type="button">Regenerate</button>
+      </div>
+    </div>
+
+    <div class="cal-out" id="calOut"></div>
+
+    <div class="tool-cta" id="toolCta" style="display:none;">
+      <div>
+        <h3>Don't want to do this every week?</h3>
+        <p>Brandloop writes it in your brand voice, schedules it, and learns what converts — on autopilot. Join the early-access waitlist.</p>
+      </div>
+      <a href="../../#waitlist" class="btn btn-light">Join the waitlist →</a>
+    </div>
+
+    <p class="tool-note">This free generator builds a structured plan from proven content angles — locally, instantly, no signup.
+       The full Brandloop product writes in your voice, auto-schedules, and learns from results.</p>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-bottom" style="border-top:0;padding-top:0;">
+      <span>© 2026 Brandloop · Free content calendar generator</span>
+      <span><a href="../../">Brandloop home</a> · <a href="../../#waitlist">Join the waitlist</a></span>
+    </div>
+  </div>
+</footer>
+
+<script src="tool.js"></script>
+</body>
+</html>
