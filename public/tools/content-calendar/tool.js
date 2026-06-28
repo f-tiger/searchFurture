@@ -213,10 +213,21 @@
     }
   }
 
+  var SITE = "https://searchfurture.tuoqiantu.workers.dev";
   function planToText() {
-    return lastPlan.map(function (p) {
+    var body = lastPlan.map(function (p) {
       return "Week " + p.week + " · " + p.day + " · " + p.platform + " [" + p.angle + "]\n" + p.idea;
     }).join("\n\n");
+    // Attribution watermark — rides along wherever the plan gets pasted (organic reach).
+    return body + "\n\n—\nMade free with Brandloop · " + SITE + "/tools/content-calendar/";
+  }
+
+  function shareOnX() {
+    var v = inputs();
+    var text = "Just planned my week of content in seconds with this free generator 🗓️ (in my own voice, not generic AI)";
+    var url = SITE + "/tools/content-calendar/";
+    var intent = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(text) + "&url=" + encodeURIComponent(url);
+    window.open(intent, "_blank", "noopener,width=560,height=420");
   }
   function downloadCSV() {
     var rows = [["Week", "Day", "Platform", "Angle", "Idea"]];
@@ -255,6 +266,8 @@
   });
   var csvBtn = document.getElementById("csvBtn");
   if (csvBtn) csvBtn.addEventListener("click", downloadCSV);
+  var shareBtn = document.getElementById("shareBtn");
+  if (shareBtn) shareBtn.addEventListener("click", shareOnX);
 
   /* ---------- license key entry ---------- */
   var haveKeyBtn = document.getElementById("haveKeyBtn");

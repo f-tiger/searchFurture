@@ -45,8 +45,13 @@ public/pricing/                # 定价页（Pro 自助下单 + FAQ）
 public/success/                # 付款成功页（轮询取回 License Key）
 public/assets/css/styles.css   # 自包含设计系统，响应式
 public/assets/js/main.js       # 样例生成器 / 导航 / 滚动渐显 / waitlist 表单
-public/assets/js/checkout.js   # [data-checkout] → POST /api/checkout → 跳 Stripe（降级回 waitlist）
-worker.js                      # Worker：服务静态资源 + /api/lead /generate /checkout /stripe-webhook /license
+public/assets/js/checkout.js   # [data-checkout] → POST /api/checkout → 跳支付商（降级回 waitlist）
+public/for/<role>/             # programmatic SEO：按 ICP 的落地页（脚本生成）
+public/content-calendar/<plat>/# programmatic SEO：按平台的日历落地页（脚本生成）
+scripts/gen-seo.mjs            # 营销自动化：生成上述 SEO 页 + 重写 sitemap（可复跑、可扩展）
+docs/launch-posts.md           # 冷启动可直接发的 X/LinkedIn/Reddit/IH 帖
+docs/email-sequence.md         # waitlist→Pro 的 5 封邮件序列
+worker.js                      # Worker：服务静态资源 + /api/lead /generate /checkout /creem-webhook /stripe-webhook /license
 lib/lead.js                    # waitlist 共享逻辑（KV + Webhook，均可选）
 lib/generate.js                # AI 内容生成（Anthropic）；持 License 跳限额+升级模型
 lib/billing.js                 # Stripe Checkout/Webhook/License（自助计费内核）
@@ -121,6 +126,21 @@ node scripts/e2e-sale.mjs                  # 终端 B
 # 生产（配好真 webhook secret 后，可随时验证线上成交链路）：
 BASE=https://searchfurture.tuoqiantu.workers.dev CREEM_WEBHOOK_SECRET=whsec_live_xxx node scripts/e2e-sale.mjs
 ```
+
+## 自动化营销层（无需外部账号即可自传播）
+
+粉丝≈0 的 solo 验证站,真正能自主落地、不依赖任何外部账号/广告预算的获客:
+
+- **Programmatic SEO**(`scripts/gen-seo.mjs`):从数据模型生成两族长尾意图落地页——
+  `public/for/<role>/`(按 ICP:consultants/coaches/saas-founders…)与
+  `public/content-calendar/<platform>/`(按平台:linkedin/twitter/instagram…),
+  各页独立文案 + 内链到免费工具/定价,并自动重写 `sitemap.xml`。**可复跑、可扩展**
+  (改数组即增页),已生成 18 页。被站点页脚内链(可爬)。
+- **病毒回流**:免费内容日历工具复制/导出的内容尾部带 "Made free with Brandloop · <url>"
+  水印 + "Share on X" 一键转发——每次分享都把流量带回。
+- **冷启动物料**:`docs/launch-posts.md`(X/LinkedIn/Reddit/IH 可直接发的帖)、
+  `docs/email-sequence.md`(waitlist→Pro 5 封邮件)。
+- 注:发帖/发邮件这最后一步需店主本人动手(或将来接 social/邮件 API),但所有内容已备好。
 
 ## 表单后端（已接 Cloudflare Pages Functions）
 
