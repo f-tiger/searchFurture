@@ -25,43 +25,46 @@
 - 差异化对比（vs 通用 AI 写手 vs 请代运营/自己做）
 - 适用对象、市场数据（含来源）、定价、waitlist 表单、FAQ
 
-## 技术
+## 技术（Cloudflare Workers + Static Assets）
 
-纯静态站点，**无构建步骤、无运行时外部依赖**，可部署到任意静态托管。
+静态站点托管在 `public/`，由一个轻量 Worker 提供静态资源并处理 waitlist API。
 
 ```
-index.html                     # 单页落地页
-assets/css/styles.css          # 自包含设计系统
-assets/js/main.js              # 样例周计划生成器 / 导航 / 渐显 / waitlist 表单
-functions/api/lead.js          # Cloudflare Pages Function：waitlist 接口 POST /api/lead
-.github/workflows/deploy.yml   # Cloudflare Pages 自动部署
+public/index.html              # 单页落地页
+public/assets/css/styles.css   # 自包含设计系统
+public/assets/js/main.js       # 样例周计划生成器 / 导航 / 渐显 / waitlist 表单
+worker.js                      # Worker：服务静态资源 + 处理 POST /api/lead
+lib/lead.js                    # waitlist 共享处理逻辑（KV + Webhook，均可选）
+wrangler.toml                  # Workers + Static Assets 配置
 ```
 
 ### 留资后端
 
-表单 AJAX 提交到 `POST /api/lead`（`functions/api/lead.js`）。可选配置：
-- 绑定 KV 命名空间 `LEADS` → 线索持久化存储；
-- 设置环境变量 `LEAD_WEBHOOK_URL`（飞书/企业微信/Slack 机器人）→ 实时通知。
+表单 AJAX 提交到 `POST /api/lead`（`worker.js` → `lib/lead.js`）。可选配置：
+- 绑定 KV 命名空间 `LEADS` → 注册信息持久化存储；
+- 设置变量 `LEAD_WEBHOOK_URL`（飞书/企业微信/Slack 机器人）→ 实时通知。
 缺任一绑定都会优雅降级，不影响表单提交。
 
 ### 本地预览
 
 ```bash
-python3 -m http.server 8080
-# 浏览器打开 http://localhost:8080
+# 纯静态预览（API 无后端，表单会优雅降级为成功提示）
+python3 -m http.server 8080 --directory public
+# 或带 Worker/API 的完整预览：
+npx wrangler dev
 ```
 
-### 部署（Cloudflare Pages + GitHub）
+### 部署（Cloudflare Workers，连 GitHub）
 
-本项目默认部署到 **Cloudflare Pages**（免费额度大）。两种方式任选其一：
-
-1. **GitHub Actions 自动部署（已配置）**：在仓库 `Settings → Secrets and variables → Actions`
-   添加 `CLOUDFLARE_API_TOKEN` 与 `CLOUDFLARE_ACCOUNT_ID`，之后每次 push 自动部署
-   （见 `.github/workflows/deploy.yml`，首次运行自动创建名为 `tongtax` 的 Pages 项目）。
-2. **控制台连仓库（零配置）**：Cloudflare → `Pages → Connect to Git` → 选本仓库，
-   构建命令留空、输出目录为根 `/`，保存即上线。
+Cloudflare 的 Git 集成会在每次 push 自动运行 `npx wrangler deploy`：
+- **生产分支**：在 Cloudflare 项目 → Settings 里把生产分支设为实际开发分支，
+  或将代码合并到 `main`（Cloudflare 默认构建 `main`）。
+- `wrangler.toml` 已配置 `main = worker.js` 与 `[assets] directory = "./public"`，
+  无需额外构建步骤。
+- 可选：在 dashboard 绑定 KV `LEADS`、设置变量 `LEAD_WEBHOOK_URL` 以启用存储/通知。
 
 ## 免责声明
 
-本站为产品概念展示；市场数据来自公开来源并标注出处；退税测算结果仅为示意估算，
-不构成税务、法律或投资建议。实际退税以发票、报关单及税务机关申报系统核算为准。
+Brandloop 为早期验证阶段的预发布产品，"Brandloop" 为暂用名；样例生成器仅在本地产出
+示意内容，尚未生成真实内容。文中市场数据来自公开来源并标注出处。加入 waitlist 不产生
+任何义务，邮箱仅用于团队就上线事宜与你联系。

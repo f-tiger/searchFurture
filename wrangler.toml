@@ -1,0 +1,21 @@
+# Cloudflare Workers + Static Assets configuration for Brandloop.
+# Deploy with: npx wrangler deploy  (Cloudflare's Git integration runs this automatically)
+
+name = "brandloop"
+main = "worker.js"
+compatibility_date = "2026-06-28"
+
+# Static site lives in ./public; served via the ASSETS binding.
+[assets]
+directory = "./public"
+binding = "ASSETS"
+
+# --- Optional (uncomment + configure in dashboard to enable) ---
+# Persist waitlist signups to KV:
+#   1) Create a KV namespace, then bind it here (or in dashboard → Settings → Bindings).
+# [[kv_namespaces]]
+# binding = "LEADS"
+# id = "<your-kv-namespace-id>"
+#
+# Realtime signup notifications: set LEAD_WEBHOOK_URL as a Variable in the
+# dashboard (Feishu / WeCom / Slack bot webhook). Do not commit secrets here.

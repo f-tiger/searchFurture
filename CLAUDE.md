@@ -2,14 +2,15 @@
 
 ## 部署偏好（重要 · 默认遵循）
 
-- **默认部署平台：Cloudflare Pages + GitHub（免费额度大）。不要用 Netlify。**
-- 站点为纯静态：根目录即发布目录，无构建步骤。
-- 自动部署管线见 `.github/workflows/deploy.yml`（每次 push 经 GitHub Actions 部署到
-  Cloudflare Pages）。需要的仓库 secret：
-  - `CLOUDFLARE_API_TOKEN`
-  - `CLOUDFLARE_ACCOUNT_ID`
-- 或在 Cloudflare 控制台 **Pages → Connect to Git** 直接连本仓库（构建命令留空，
-  输出目录为根 `/`），零配置即可上线。
+- **默认部署平台：Cloudflare + GitHub（免费额度大）。不要用 Netlify。**
+- 结构为 **Workers + Static Assets**：`wrangler.toml`（`main = worker.js`、
+  `[assets] directory = "./public"`）+ `worker.js`（服务静态资源 + `POST /api/lead`）+
+  `lib/lead.js`（waitlist 逻辑）。静态站点在 `public/`。
+- Cloudflare 的 Git 集成每次 push 自动跑 `npx wrangler deploy`，无需额外构建步骤。
+- **⚠️ 生产分支**：Cloudflare 默认构建 **main**。开发在功能分支上，故需把 Cloudflare
+  项目的生产分支改成该功能分支，**或**把代码合并进 `main`，否则会构建到空的 main 而失败。
+- 部署前可用 `npx wrangler deploy --dry-run` 本地校验配置。
+- 可选：dashboard 绑定 KV `LEADS`、设置变量 `LEAD_WEBHOOK_URL` 启用存储/通知。
 
 ## 产品定位（Brandloop）
 
@@ -28,16 +29,19 @@
 ## 目录结构
 
 ```
-index.html                     # 单页落地页（含交互式退税测算器）
-assets/css/styles.css          # 自包含设计系统，响应式
-assets/js/main.js              # 测算器 / 导航 / 滚动渐显 / 表单
-.github/workflows/deploy.yml   # Cloudflare Pages 自动部署
+public/index.html              # 单页落地页（含样例周计划生成器）
+public/assets/css/styles.css   # 自包含设计系统，响应式
+public/assets/js/main.js       # 样例生成器 / 导航 / 滚动渐显 / waitlist 表单
+worker.js                      # Worker：服务静态资源 + POST /api/lead
+lib/lead.js                    # waitlist 共享逻辑（KV + Webhook，均可选）
+wrangler.toml                  # Workers + Static Assets 配置
 ```
 
 ## 本地预览
 
 ```bash
-python3 -m http.server 8080   # 打开 http://localhost:8080
+python3 -m http.server 8080 --directory public   # 纯静态预览
+# 或带 Worker/API：npx wrangler dev
 ```
 
 ## 表单后端（已接 Cloudflare Pages Functions）
