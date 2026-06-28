@@ -12,12 +12,12 @@ compatibility_date = "2026-06-28"
 directory = "./public"
 binding = "ASSETS"
 
-# --- Optional (uncomment + configure in dashboard to enable) ---
-# Persist waitlist signups to KV:
-#   1) Create a KV namespace, then bind it here (or in dashboard → Settings → Bindings).
-# [[kv_namespaces]]
-# binding = "LEADS"
-# id = "<your-kv-namespace-id>"
-#
+# Persist waitlist signups to KV (version-controlled so deploys never drop the binding).
+[[kv_namespaces]]
+binding = "LEADS"
+id = "acfc7962f6ac4a12a0f45c07731d7bf8"
+
 # Realtime signup notifications: set LEAD_WEBHOOK_URL as a Variable in the
 # dashboard (Feishu / WeCom / Slack bot webhook). Do not commit secrets here.
+# Admin view auth: set ADMIN_TOKEN as an encrypted Secret in the dashboard
+# (encrypted secrets survive deploys; plaintext vars can be overwritten).
