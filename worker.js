@@ -11,6 +11,7 @@ import { handleLead } from "./lib/lead.js";
 import { handleLeadsAdmin } from "./lib/admin.js";
 import { handleGenerate } from "./lib/generate.js";
 import { handleCheckout, handleCreemWebhook, handleStripeWebhook, handleLicense } from "./lib/billing.js";
+import { handleHealth, submitIndexNow } from "./lib/ops.js";
 
 export default {
   async fetch(request, env) {
@@ -37,8 +38,17 @@ export default {
     if (url.pathname === "/api/license") {
       return handleLicense(request, env);
     }
+    if (url.pathname === "/api/health") {
+      return handleHealth(request, env);
+    }
 
     // Fallback to static assets (returns the asset, or a 404 from the asset layer).
     return env.ASSETS.fetch(request);
+  },
+
+  // Cloudflare Cron Trigger — autonomous SEO ops: push all URLs to IndexNow so new
+  // pages get indexed on a schedule with zero human involvement. (See wrangler.toml.)
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil(submitIndexNow(env));
   },
 };

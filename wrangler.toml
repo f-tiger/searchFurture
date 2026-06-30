@@ -18,6 +18,12 @@ not_found_handling = "404-page"
 binding = "LEADS"
 id = "acfc7962f6ac4a12a0f45c07731d7bf8"
 
+# Autonomous SEO ops: a daily Cron Trigger pushes the sitemap URLs to IndexNow
+# (Bing / Yandex / Naver / Seznam) so new pages get indexed with zero human
+# involvement. Free plan includes Cron Triggers. Handler: worker.js scheduled().
+[triggers]
+crons = ["0 7 * * *"]
+
 # Realtime signup notifications: set LEAD_WEBHOOK_URL as a Variable in the
 # dashboard (Feishu / WeCom / Slack bot webhook). Do not commit secrets here.
 # Admin view auth: set ADMIN_TOKEN as an encrypted Secret in the dashboard
