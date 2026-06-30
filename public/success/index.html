@@ -100,31 +100,35 @@
     show(ready);
   }
 
-  var tries = 0, maxTries = 8;
-  var dotTimer = setInterval(function () {
-    if (dots) dots.textContent = dots.textContent.length >= 3 ? "·" : dots.textContent + "·";
-  }, 400);
+  var tries = 0, maxTries = 8, polling = false, dotTimer = null;
+  function startDots() {
+    if (dotTimer) clearInterval(dotTimer); // never stack intervals
+    dotTimer = setInterval(function () {
+      if (dots) dots.textContent = dots.textContent.length >= 3 ? "·" : dots.textContent + "·";
+    }, 400);
+  }
+  function stop() { polling = false; if (dotTimer) { clearInterval(dotTimer); dotTimer = null; } }
 
   function poll() {
-    if (!sessionId) { clearInterval(dotTimer); show(delayed); return; }
+    if (!sessionId) { stop(); show(delayed); return; }
     tries++;
     fetch("/api/license?ref=" + encodeURIComponent(sessionId))
       .then(function (r) { return r.json(); })
       .then(function (data) {
-        if (data && data.ok && data.token) {
-          clearInterval(dotTimer);
-          unlock(data.token);
-          return;
-        }
-        if (tries >= maxTries) { clearInterval(dotTimer); show(delayed); return; }
+        if (data && data.ok && data.token) { stop(); unlock(data.token); return; }
+        if (tries >= maxTries) { stop(); show(delayed); return; }
         setTimeout(poll, 1500); // webhook may not have landed yet
       })
       .catch(function () {
-        if (tries >= maxTries) { clearInterval(dotTimer); show(delayed); return; }
+        if (tries >= maxTries) { stop(); show(delayed); return; }
         setTimeout(poll, 1500);
       });
   }
-  poll();
+  function startPolling() {
+    if (polling) return; // guard: a loop is already in flight
+    polling = true; tries = 0; show(pending); startDots(); poll();
+  }
+  startPolling();
 
   var copyBtn = document.getElementById("copyKey");
   if (copyBtn) copyBtn.addEventListener("click", function () {
@@ -135,13 +139,7 @@
   });
 
   var retry = document.getElementById("retryBtn");
-  if (retry) retry.addEventListener("click", function () {
-    tries = 0; show(pending);
-    dotTimer = setInterval(function () {
-      if (dots) dots.textContent = dots.textContent.length >= 3 ? "·" : dots.textContent + "·";
-    }, 400);
-    poll();
-  });
+  if (retry) retry.addEventListener("click", startPolling);
 })();
 </script>
 </body>

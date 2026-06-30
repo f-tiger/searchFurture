@@ -16,13 +16,29 @@
   function setLicense(v) {
     try { if (v) localStorage.setItem("bl_license", v); } catch (e) {}
   }
-  function show(el, on) { if (el) el.style.display = on ? (el.tagName === "DIV" ? "block" : "block") : "none"; }
-  function reflectProState() {
+  function clearLicense() {
+    try { localStorage.removeItem("bl_license"); } catch (e) {}
+  }
+  function setProUI(on) {
     var badge = document.getElementById("proBadge");
-    if (getLicense()) {
-      if (badge) badge.style.display = "block";
-      var pw = document.getElementById("paywall"); if (pw) pw.style.display = "none";
-    }
+    if (badge) badge.style.display = on ? "block" : "none";
+    if (on) { var pw = document.getElementById("paywall"); if (pw) pw.style.display = "none"; }
+  }
+  // Server is the source of truth — never assert "Pro" from a localStorage string alone.
+  function validateLicense(token) {
+    return fetch("/api/license?token=" + encodeURIComponent(token))
+      .then(function (r) { return r.json(); })
+      .then(function (d) { return !!(d && d.ok && d.valid); })
+      .catch(function () { return false; });
+  }
+  // On load, verify any stored key against the server; clear it if it's stale/revoked/invalid.
+  function reflectProState() {
+    var token = getLicense();
+    if (!token) { setProUI(false); return; }
+    validateLicense(token).then(function (valid) {
+      if (valid) { setProUI(true); }
+      else { clearLicense(); setProUI(false); }
+    });
   }
 
   var FORMAT = {
@@ -182,7 +198,7 @@
         var pw = document.getElementById("paywall"); if (pw) pw.style.display = "none";
         var ke = document.getElementById("keyEntry"); if (ke) ke.style.display = "none";
         if (data.pro) {
-          var badge = document.getElementById("proBadge"); if (badge) badge.style.display = "block";
+          setProUI(true);
           setStatus("★ Pro: generated on the highest-quality model. Tweak any line to fit your voice.");
         } else {
           setStatus("✨ Generated with AI. Tweak any line to fit your voice.");
@@ -285,16 +301,22 @@
       var msg = document.getElementById("keyMsg");
       var val = ki && ki.value ? ki.value.trim() : "";
       if (!val) { if (msg) { msg.textContent = "Paste your key first."; msg.style.color = "var(--ink-3)"; } return; }
-      setLicense(val);
       if (msg) { msg.textContent = "Checking your key…"; msg.style.color = "var(--ink-3)"; }
-      // Validate by generating — the response's pro flag confirms the license.
-      setStatus("");
-      generateAI();
-      setTimeout(function () {
-        if (getLicense() && document.getElementById("proBadge").style.display === "block") {
+      keySave.disabled = true;
+      // Validate against the server BEFORE persisting — invalid keys are never stored.
+      validateLicense(val).then(function (valid) {
+        keySave.disabled = false;
+        if (valid) {
+          setLicense(val);
+          setProUI(true);
+          var ke = document.getElementById("keyEntry"); if (ke) ke.style.display = "none";
           if (msg) { msg.textContent = "Unlocked! Enjoy Pro."; msg.style.color = "#0a7d3c"; }
+          setStatus("");
+          generateAI();
+        } else {
+          if (msg) { msg.textContent = "That key isn't valid or has expired. Check it and try again."; msg.style.color = "#c0392b"; }
         }
-      }, 1200);
+      });
     });
   }
 

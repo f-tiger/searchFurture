@@ -96,11 +96,16 @@ python3 -m http.server 8080 --directory public   # 纯静态预览
   各 provider 实现 `createCheckout` + `parseWebhook`，共享 license 铸造/校验内核（多 ref 反查）。
 - 路由（`worker.js`）：
   - `POST /api/checkout` — 按 provider 创建 hosted checkout，返回 `{ok,url}`；前端 `assets/js/checkout.js` 跳转。
-  - `POST /api/creem-webhook` — 校验 `creem-signature`（HMAC-SHA256 hex of raw body），`checkout.completed`
-    铸造 License（`lic:<token>` 存 KV）+ 把 checkout_id/request_id/order_id 都映射到 `sess:<ref>→token`（7 天）。
-  - `POST /api/stripe-webhook` — Stripe 适配器（`t=,v1=` 签名，`checkout.session.completed`）。
-  - `GET /api/license?ref=...`（兼容 `session_id`/`checkout_id`/`request_id`/`order_id`）— 成功页轮询取回 key。
-  - `verifyLicense()` 被 `/api/generate` 调用：持 key 者跳过免费限额、走 `GEN_MODEL_PRO`。
+  - `POST /api/creem-webhook` — 校验 `creem-signature`（HMAC-SHA256 hex of raw body，比较大小写无关），
+    `checkout.completed` 铸造 License（`lic:<token>` 存 KV）+ 多 ref 映射 `sess:<ref>→token`（7 天）+
+    `sub:<subId>→token`（持久，供续订/退订查找）。**订阅生命周期**：`subscription.expired/unpaid` 与
+    `refund.created/dispute.created`（经 `obj.subscription` 解析，非 `obj.id`）→ 撤销 License（status=canceled）；
+    `subscription.canceled` 不撤销（付费期内仍可用）。
+  - `POST /api/stripe-webhook` — Stripe 适配器（`t=,v1=` 签名；`checkout.session.completed` 铸造、
+    `customer.subscription.deleted` 撤销）。
+  - `GET /api/license?ref=...`（兼容 `session_id`/`checkout_id`/`request_id`/`order_id`）— 成功页轮询取回 key；
+    `GET /api/license?token=...` — 校验某 key 是否有效（前端"Unlock"先验后存,避免假 Pro 态）。
+  - `verifyLicense()` 被 `/api/generate` 调用：持有效 key 者跳过免费限额、走 `GEN_MODEL_PRO`。
 - 前端：`public/pricing/`、`public/success/`（provider 无关，存 localStorage `bl_license`）、
   内容日历工具内置 paywall + License 输入框。
 - 上线配置（Worker → Settings）— **默认 Creem**：
@@ -117,10 +122,12 @@ python3 -m http.server 8080 --directory public   # 纯静态预览
 
 真实跑通"成交"管线的冒烟测试（Creem + Stripe 双 provider）：伪造签名被拒 → 真签名的
 `checkout.completed`/`checkout.session.completed` 被接受 → KV 铸造 License → 买家多 ref 取回 key。
-**已用本地真 Worker（`wrangler dev`）跑通 10/10**。
+**已用本地真 Worker（`wrangler dev`）跑通 10/10**。另有 `scripts/test-billing-unit.mjs`（mock KV 纯单测，
+覆盖订阅生命周期：购买→激活→到期/退款→撤销、canceled 不撤销、双 provider、token 校验端点）**跑通 15/15**。
 
 ```bash
 # 本地：.dev.vars 里设 CREEM_WEBHOOK_SECRET / STRIPE_WEBHOOK_SECRET 的测试值
+node scripts/test-billing-unit.mjs         # 纯单测,无需起服务
 npx wrangler dev --port 8787 --local      # 终端 A
 node scripts/e2e-sale.mjs                  # 终端 B
 # 生产（配好真 webhook secret 后，可随时验证线上成交链路）：
