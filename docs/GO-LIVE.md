@@ -8,12 +8,15 @@ verifiable so you never guess whether it worked.
 ## 1. Create the Creem account (the only KYC step)
 1. Sign up at https://creem.io, complete identity verification (KYC), bind
    **Alipay** as your payout method.
-2. Create **one product**: a **monthly subscription**, price **$19/mo**, name
-   "Brandloop Pro". Copy its **product id** (`prod_...`).
-3. Developers → API Keys → copy your **API key** (`creem_...`).
+2. Developers → API Keys → copy your **API key** (`creem_...`).
+3. **Create the product with one command** (no dashboard clicking):
+   ```bash
+   CREEM_API_KEY=creem_your_key node scripts/setup-creem.mjs
+   ```
+   It prints your `CREEM_PRODUCT_ID`. (Add `CREEM_TEST=1` to rehearse in test mode first.)
 4. Developers → Webhooks → add endpoint
    `https://searchfurture.tuoqiantu.workers.dev/api/creem-webhook`, subscribe to
-   at least `checkout.completed`, `subscription.expired`, `subscription.unpaid`,
+   `checkout.completed`, `subscription.expired`, `subscription.unpaid`,
    `refund.created`, `dispute.created`. Copy the **webhook secret** (`whsec...`).
 
 ## 2. Paste 3 secrets into the Worker (Cloudflare dashboard → Settings → Variables)
